@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/list_row_selector"
+                android:padding="8dp"
+                android:clickable="true">
+
+    <!-- status Image -->
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dp"
+        android:gravity="center_vertical|center"
+        android:textSize="@dimen/status"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"
+        android:text="I"
+        android:background="@color/dspam_status_virus"/>
+
+    <TextView
+        android:id="@+id/from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/status"
+        android:textSize="@dimen/from"
+        android:textStyle="bold"
+        android:textIsSelectable="true"
+        android:autoLink="email"
+        android:text="The Darth &apos;Trog&apos; Trogious &lt;trog@swmud.net>"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+
+
+    <TextView
+        android:id="@+id/signature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/from"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@+id/status"
+        android:textSize="@dimen/signature"
+        android:text="23123esda13e1123"
+        android:textIsSelectable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+
+    <TextView
+        android:id="@+id/subject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/subject"
+        android:textSize="@dimen/subject"
+        android:layout_below="@+id/signature"
+        android:layout_marginTop="10dp"
+        android:text="The Dark Plan"
+        android:textIsSelectable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+
+    <TextView
+        android:id="@+id/signatureCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/from"
+        android:layout_marginTop="4dp"
+        android:textSize="@dimen/signature"
+        android:text="2"
+        android:gravity="right"
+        android:layout_toRightOf="@+id/signature"
+        android:layout_marginLeft="6dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/from"
+        android:layout_marginTop="4dp"
+        android:textSize="@dimen/signature"
+        android:text="2016-05-01 13:00:01"
+        android:layout_alignParentRight="true"
+        android:gravity="right"
+        android:textIsSelectable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+
+</RelativeLayout>
