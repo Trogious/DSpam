@@ -2,11 +2,14 @@ package net.swmud.trog.dspam;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -51,11 +54,10 @@ public class HistoryListAdapter extends BaseAdapter {
                 .findViewById(R.id.status);
         TextView from = (TextView) convertView.findViewById(R.id.from);
         TextView signature = (TextView) convertView.findViewById(R.id.signature);
-        TextView signatureCount = (TextView) convertView.findViewById(R.id.signatureCount);
         TextView receivedDate = (TextView) convertView.findViewById(R.id.date);
         TextView subject = (TextView) convertView.findViewById(R.id.subject);
 
-        DspamEntry entry = dspam.dspam.get(position);
+        final DspamEntry entry = dspam.dspam.get(position);
 
         DspamEntry.SpamStatus spamStatus = entry.getSpamStatus();
         status.setText(entry.getSpamStatusText());
@@ -104,12 +106,22 @@ public class HistoryListAdapter extends BaseAdapter {
         status.setText(spamStatus.getStatusLetter().toCharArray(), 0, 1);
         from.setText(entry.getFrom());
         signature.setText(entry.getSignature());
-        signatureCount.setText(""+entry.getSignatureCount());
         subject.setText(entry.getSubject());
 
         Date date = entry.getDate();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         receivedDate.setText(df.format(date));
+
+        convertView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Intent intent = new Intent(activity, DetailsActivity.class);
+                intent.putExtra("entry", entry);
+                activity.startActivity(intent);
+//                Toast.makeText(activity, entry.getDeliveryStatus(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
 
         return convertView;
     }

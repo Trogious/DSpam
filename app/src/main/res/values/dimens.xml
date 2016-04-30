@@ -4,6 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="status">30sp</dimen>
     <dimen name="from">14sp</dimen>
-    <dimen name="signature">13sp</dimen>
+    <dimen name="signature">12sp</dimen>
     <dimen name="subject">12sp</dimen>
+    <dimen name="details_value">14sp</dimen>
 </resources>

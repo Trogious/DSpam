@@ -2,6 +2,7 @@ package net.swmud.trog.dspam;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -52,7 +53,7 @@ import java.util.Date;
 
 */
 
-public class DspamEntry {
+public class DspamEntry implements Serializable {
 
     public enum DeliveryStatus {
         UNKNOWN,

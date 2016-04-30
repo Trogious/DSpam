@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@android:color/white"
-    tools:context="net.swmud.trog.dspam.MainActivity">
+    tools:context=".LaunchActivity">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -19,4 +19,13 @@
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/dspamenvelope"
         android:src="@drawable/dspam"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/launch_bottom_text"
+        android:id="@+id/bottomtext"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>

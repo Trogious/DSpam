@@ -23,14 +23,14 @@
 
     <TextView
         android:id="@+id/from"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/status"
         android:textSize="@dimen/from"
         android:textStyle="bold"
         android:textIsSelectable="true"
         android:autoLink="email"
-        android:text="The Darth &apos;Trog&apos; Trogious &lt;trog@swmud.net>"
+        android:text="The Darth &apos;Trog&apos; Trogious &lt;trogeliusztrog@swmud.net>"
         android:focusable="true"
         android:focusableInTouchMode="true"/>
 
@@ -43,7 +43,7 @@
         android:layout_marginTop="4dp"
         android:layout_toRightOf="@+id/status"
         android:textSize="@dimen/signature"
-        android:text="23123esda13e1123"
+        android:text="56da47e4232201413514249"
         android:textIsSelectable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"/>
@@ -54,24 +54,10 @@
         android:layout_height="wrap_content"
         android:textColor="@color/subject"
         android:textSize="@dimen/subject"
-        android:layout_below="@+id/signature"
+        android:layout_below="@+id/date"
         android:layout_marginTop="10dp"
         android:text="The Dark Plan"
         android:textIsSelectable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"/>
-
-    <TextView
-        android:id="@+id/signatureCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/from"
-        android:layout_marginTop="4dp"
-        android:textSize="@dimen/signature"
-        android:text="2"
-        android:gravity="right"
-        android:layout_toRightOf="@+id/signature"
-        android:layout_marginLeft="6dp"
         android:focusable="true"
         android:focusableInTouchMode="true"/>
 
