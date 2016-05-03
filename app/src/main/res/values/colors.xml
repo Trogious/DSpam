@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="launch_toptext">#cccccc</color>
     <color name="subject">#222222</color>
     <color name="details_name">#777777</color>
     <color name="details_value">#000000</color>

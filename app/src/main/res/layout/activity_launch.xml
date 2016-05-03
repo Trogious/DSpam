@@ -28,4 +28,14 @@
         android:id="@+id/bottomtext"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/launch_top_text"
+        android:id="@+id/toptext"
+        android:textColor="@color/launch_toptext"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>

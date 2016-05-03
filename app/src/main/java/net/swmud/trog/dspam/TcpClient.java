@@ -13,13 +13,19 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 
 public class TcpClient implements Runnable {
-    private static final String PROTOCOL = "TLSv1.2";
     private String host;
     private int port;
     private Socket socket = new Socket();
@@ -41,32 +47,35 @@ public class TcpClient implements Runnable {
         running = true;
         Log.i("Debug", "TcpClient.run()");
 
-
+        SocketAddress sockAddr = new InetSocketAddress(host, port);
         try {
             Log.d("D", "try");
-            SocketAddress sockAddr = new InetSocketAddress(host, port);
             socket.connect(sockAddr, 10000);
             Log.d("D", "socket created");
 
-/*
-            SSLSocket sock = createSslSocket(socket, SERVER_IP, SERVER_PORT);
+            SSLSocket sock = createSslSocket(socket);
             sock.startHandshake();
-*/
+            examineSslSocket(sock);
 
-            synchronized (socket) {
-                mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-                mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                socket.setSoTimeout(0);
+            synchronized (sock) {
+                mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(sock.getOutputStream())), true);
+                mBufferIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+                sock.setSoTimeout(0);
             }
         } catch (UnknownHostException e) {
-            Log.e("E", e.getMessage());
-            errListener.onMessage(e.getMessage());
-            finish();
+            handleException(e);
             return;
         } catch (IOException e) {
-            Log.e("E", e.getMessage());
-            errListener.onMessage(e.getMessage());
-            finish();
+            handleException(e);
+            return;
+        } catch (NoSuchAlgorithmException e) {
+            handleException(e);
+            return;
+        } catch (KeyManagementException e) {
+            handleException(e);
+            return;
+        } catch (KeyStoreException e) {
+            handleException(e);
             return;
         }
         errListener.onMessage("connected");
@@ -108,6 +117,12 @@ public class TcpClient implements Runnable {
         finish();
     }
 
+    private void handleException(Exception e) {
+        Log.e("E", e.getMessage());
+        errListener.onMessage(e.getMessage());
+        finish();
+    }
+
     private void closeSocket() {
         if (socket != null) {
             synchronized (socket) {
@@ -142,11 +157,90 @@ public class TcpClient implements Runnable {
         void onMessage(T msg);
     }
 
-    private SSLSocket createSslSocket(Socket socket) throws IOException {
-        SSLSocketFactory sf = (SSLSocketFactory) SSLSocketFactory.getDefault();
+    private SSLSocket createSslSocket(Socket socket) throws NoSuchAlgorithmException, KeyManagementException, IOException, KeyStoreException {
+        SSLSocketFactory sf = new ExtendedSslFactory();//(SSLSocketFactory) SSLSocketFactory.getDefault();
         SSLSocket sock = (SSLSocket) sf.createSocket(socket, host, port, true);
-        sock.setEnabledProtocols(new String[] { PROTOCOL });
+        sock.setEnabledProtocols(new String[]{Constants.SECURE_PROTOCOL});
 
         return sock;
+    }
+
+    private static void examineX509Cert(X509Certificate cert) {
+        Log.e("x509", "not before: " + DateFormatter.format(cert.getNotBefore()));
+        Log.e("x509", "not after: " + DateFormatter.format(cert.getNotAfter()));
+        Log.e("x509", "issuer DN: " + cert.getIssuerDN().getName());
+        Log.e("x509", "issuer principal x500: " + cert.getIssuerX500Principal().getName());
+    }
+
+    private static void examineX509Cert(javax.security.cert.X509Certificate cert) {
+        Log.e("x509", "not before: " + DateFormatter.format(cert.getNotBefore()));
+        Log.e("x509", "not after: " + DateFormatter.format(cert.getNotAfter()));
+        Log.e("x509", "issuer DN: " + cert.getIssuerDN().getName());
+        Log.e("x509", "subject DN: " + cert.getSubjectDN().getName());
+    }
+
+    private static void examineSslSocket(SSLSocket sock) {
+        Log.e("SSL", "want client auth: " + sock.getWantClientAuth());
+        Log.e("SSL", "need client auth: " + sock.getNeedClientAuth());
+        SSLSession sess = sock.getSession();
+        Log.e("SSL", "protocol used: " + sess.getProtocol());
+        Log.d("SSL", "peer certificates:");
+        try {
+            Certificate[] certs = sess.getPeerCertificates();
+            if (certs != null) {
+                for (Certificate cert : certs) {
+                    if (cert instanceof X509Certificate) {
+                        X509Certificate x5 = (X509Certificate) cert;
+                        examineX509Cert(x5);
+                    } else {
+                        Log.e("SSL", "NOT x509");
+                    }
+                }
+            }
+        } catch (SSLPeerUnverifiedException e) {
+            Log.d("SSL", e.getMessage());
+        }
+
+        Log.d("SSL", "local certificates:");
+        try {
+            Certificate[] certs = sess.getLocalCertificates();
+            if (certs != null) {
+                for (Certificate cert : certs) {
+                    if (cert instanceof X509Certificate) {
+                        X509Certificate x5 = (X509Certificate) cert;
+                        examineX509Cert(x5);
+                    } else {
+                        Log.e("SSL", "NOT x509");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.d("SSL", e.getMessage());
+        }
+
+        Log.d("SSL", "peer certificate chain:");
+        try {
+            javax.security.cert.X509Certificate[] x509certs = sess.getPeerCertificateChain();
+            if (x509certs != null) {
+                for (javax.security.cert.X509Certificate cert : x509certs) {
+                    examineX509Cert(cert);
+                }
+            }
+        } catch (SSLPeerUnverifiedException e) {
+            Log.d("SSL", e.getMessage());
+        }
+
+        Log.d("SSL", "value names:");
+        for (String s : sess.getValueNames()) {
+            Log.d("SSL", " " + s);
+        }
+        Log.d("SSL", "enabled protocols:");
+        for (String s : sock.getEnabledProtocols()) {
+            Log.d("SSL", " " + s);
+        }
+        Log.d("SSL", "enabled cipher suites:");
+        for (String s : sock.getEnabledCipherSuites()) {
+            Log.d("SSL", " " + s);
+        }
     }
 }

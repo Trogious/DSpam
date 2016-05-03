@@ -19,7 +19,6 @@ public class Settings {
     private static final String SETTINGS_FILE_NAME = "dspamsettings";
     private static final int SETTINGS_READ_SIZE = 1024;
     private static final String SETTING_SEPARATOR = "\n";
-    private static final String SETTING_ENCODING = "UTF-8";
 
     private String host = "";
     private int port = 0;
@@ -50,7 +49,7 @@ public class Settings {
             byte buf[] = new byte[SETTINGS_READ_SIZE];
             int bytesRead = inputStream.read(buf);
             if (bytesRead > 0) {
-                String settingsStr = new String(buf, 0, bytesRead, SETTING_ENCODING);
+                String settingsStr = new String(buf, 0, bytesRead, Constants.ENCODING);
                 Log.e("LOAD", settingsStr);
                 String setStr[] = settingsStr.split(SETTING_SEPARATOR);
                 if (setStr != null && setStr.length > 2) {
@@ -95,7 +94,7 @@ public class Settings {
         try {
             outputStream = context.openFileOutput(SETTINGS_FILE_NAME, Context.MODE_PRIVATE);
             sb.append(Crypto.encrypt(getAndroidId(context), password));
-            outputStream.write(sb.toString().getBytes(SETTING_ENCODING));
+            outputStream.write(sb.toString().getBytes(Constants.ENCODING));
             outputStream.flush();
             Log.e("SAVE", sb.toString() + " flushed");
         } catch (FileNotFoundException e) {

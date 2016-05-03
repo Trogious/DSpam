@@ -2,11 +2,6 @@ package net.swmud.trog.dspam;
 
 import com.google.gson.Gson;
 
-/**
- * Created by root on 23.04.16.
-
-
- */
 public class DspamLogs {
     public Dspam parse(String logs) {
         Gson gson = new Gson();

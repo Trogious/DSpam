@@ -10,17 +10,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.InputStream;
+
 public class LaunchActivity extends AppCompatActivity {
     private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
     private TcpClient tcpClient;
     private final LaunchActivity self = this;
     private TextView bottomtext;
     private StringBuilder sending = new StringBuilder("sending request");
+    public static InputStream inputStream;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
+
+        inputStream = getResources().openRawResource(R.raw.clientkeystore);
 
         bottomtext = (TextView) findViewById(R.id.bottomtext);
 
@@ -49,7 +54,12 @@ public class LaunchActivity extends AppCompatActivity {
                 } else {
                     sending.append(".");
                     bottomtext.setText(sending.toString());
-                    tcpClient.sendMessage("{\"dspam\":0}");
+                    backgroundExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            tcpClient.sendMessage("{\"dspam\":0}");
+                        }
+                    });
                     Log.i("Debug", "onButtonSend2");
                 }
             }

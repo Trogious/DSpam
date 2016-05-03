@@ -32,9 +32,7 @@ public class DetailsActivity extends Activity {
         DspamEntry entry = (DspamEntry) getIntent().getSerializableExtra("entry");
 
         from.setText(entry.getFrom());
-        Date eDate = entry.getDate();
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        date.setText(df.format(eDate));
+        date.setText(DateFormatter.format(entry.getDate()));
         signature.setText(entry.getSignature());
         signatureCount.setText(""+entry.getSignatureCount());
         spamStatus.setText(entry.getSpamStatus().toString());

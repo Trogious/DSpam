@@ -17,6 +17,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
@@ -26,3 +27,13 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.android.support:support-v4:23.3.0'
 }
+
+
+task copywww(dependsOn: ['packageDebug', 'zipalignDebug'], type: Copy) {
+    from ('build/outputs/apk')
+    include '*.apk'
+    destinationDir file('/home/dupa/www')
+}
+
+
+assembleDebug.dependsOn copywww

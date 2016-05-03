@@ -107,10 +107,7 @@ public class HistoryListAdapter extends BaseAdapter {
         from.setText(entry.getFrom());
         signature.setText(entry.getSignature());
         subject.setText(entry.getSubject());
-
-        Date date = entry.getDate();
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        receivedDate.setText(df.format(date));
+        receivedDate.setText(DateFormatter.format(entry.getDate()));
 
         convertView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
