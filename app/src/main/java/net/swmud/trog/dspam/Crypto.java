@@ -15,7 +15,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Crypto {
-    private static final String ALGORITHM = "AES";
+    private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String ENCODING = "UTF-8";
 
 
