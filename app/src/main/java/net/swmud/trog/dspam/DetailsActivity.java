@@ -1,6 +1,6 @@
 package net.swmud.trog.dspam;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +11,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends Activity {
     private final DetailsActivity self = this;
 
     @Override

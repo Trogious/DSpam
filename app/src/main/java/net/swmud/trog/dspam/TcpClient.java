@@ -8,24 +8,30 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 
 public class TcpClient implements Runnable {
     private static final String PROTOCOL = "TLSv1.2";
-    private static final String SERVER_IP = "192.168.1.1";
-    private static final int SERVER_PORT = 3000;
-    private Socket socket;
+    private String host;
+    private int port;
+    private Socket socket = new Socket();
     private PrintWriter mBufferOut;
     private BufferedReader mBufferIn;
     private boolean running = false;
     private Listener msgListener;
     private Listener errListener;
 
-    TcpClient(Listener<String> msgListener, Listener<String> errListener) {
+    TcpClient(String host, int port, Listener<String> msgListener, Listener<String> errListener) {
+        this.host = host;
+        this.port = port;
         this.msgListener = msgListener;
         this.errListener = errListener;
     }
@@ -36,15 +42,15 @@ public class TcpClient implements Runnable {
         Log.i("Debug", "TcpClient.run()");
 
 
-        InetAddress serverAddr = null;
         try {
-            serverAddr = InetAddress.getByName(SERVER_IP);
-            socket = new Socket(serverAddr, SERVER_PORT);
+            Log.d("D", "try");
+            SocketAddress sockAddr = new InetSocketAddress(host, port);
+            socket.connect(sockAddr, 10000);
+            Log.d("D", "socket created");
 
 /*
-            SSLSocketFactory sf = (SSLSocketFactory) SSLSocketFactory.getDefault();
-            SSLSocket sock = (SSLSocket) sf.createSocket(serverAddr, SERVER_PORT);
-            sock.setEnabledProtocols(new String[] { PROTOCOL });
+            SSLSocket sock = createSslSocket(socket, SERVER_IP, SERVER_PORT);
+            sock.startHandshake();
 */
 
             synchronized (socket) {
@@ -53,10 +59,12 @@ public class TcpClient implements Runnable {
                 socket.setSoTimeout(0);
             }
         } catch (UnknownHostException e) {
+            Log.e("E", e.getMessage());
             errListener.onMessage(e.getMessage());
             finish();
             return;
         } catch (IOException e) {
+            Log.e("E", e.getMessage());
             errListener.onMessage(e.getMessage());
             finish();
             return;
@@ -78,7 +86,6 @@ public class TcpClient implements Runnable {
                 continue;
             } catch (IOException e) {
                 errListener.onMessage(e.getMessage());
-                finish();
                 break;
             }
 
@@ -97,7 +104,8 @@ public class TcpClient implements Runnable {
             }
         }
 
-        running = false;
+        Log.i("Debug", "finished");
+        finish();
     }
 
     private void closeSocket() {
@@ -114,6 +122,7 @@ public class TcpClient implements Runnable {
     public void finish() {
         running = false;
         closeSocket();
+        Log.e("E", "finished");
     }
 
     public boolean isRunning() {
@@ -121,11 +130,23 @@ public class TcpClient implements Runnable {
     }
 
     public void sendMessage(String msg) {
-        mBufferOut.print(msg);
-        mBufferOut.flush();
+        if (mBufferOut != null) {
+            synchronized (mBufferOut) {
+                mBufferOut.print(msg);
+                mBufferOut.flush();
+            }
+        }
     }
 
     public interface Listener<T> {
         void onMessage(T msg);
+    }
+
+    private SSLSocket createSslSocket(Socket socket) throws IOException {
+        SSLSocketFactory sf = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        SSLSocket sock = (SSLSocket) sf.createSocket(socket, host, port, true);
+        sock.setEnabledProtocols(new String[] { PROTOCOL });
+
+        return sock;
     }
 }

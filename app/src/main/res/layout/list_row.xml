@@ -28,11 +28,11 @@
         android:layout_toRightOf="@+id/status"
         android:textSize="@dimen/from"
         android:textStyle="bold"
-        android:textIsSelectable="true"
+        android:textIsSelectable="false"
         android:autoLink="email"
         android:text="The Darth &apos;Trog&apos; Trogious &lt;trogeliusztrog@swmud.net>"
-        android:focusable="true"
-        android:focusableInTouchMode="true"/>
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 
 
     <TextView
@@ -44,9 +44,9 @@
         android:layout_toRightOf="@+id/status"
         android:textSize="@dimen/signature"
         android:text="56da47e4232201413514249"
-        android:textIsSelectable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"/>
+        android:textIsSelectable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 
     <TextView
         android:id="@+id/subject"
@@ -57,9 +57,9 @@
         android:layout_below="@+id/date"
         android:layout_marginTop="10dp"
         android:text="The Dark Plan"
-        android:textIsSelectable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"/>
+        android:textIsSelectable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 
     <TextView
         android:id="@+id/date"
@@ -71,8 +71,8 @@
         android:text="2016-05-01 13:00:01"
         android:layout_alignParentRight="true"
         android:gravity="right"
-        android:textIsSelectable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"/>
+        android:textIsSelectable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 
 </RelativeLayout>

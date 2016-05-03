@@ -1,12 +1,12 @@
 package net.swmud.trog.dspam;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 
 import com.google.gson.JsonSyntaxException;
 
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends Activity {
 
 
     @Override
