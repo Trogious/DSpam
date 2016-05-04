@@ -1,0 +1,31 @@
+#Generate a CA 
+openssl req -days 36500 -out ca.pem -new -x509 
+#        -generates CA file "ca.pem" and CA key "privkey.pem"
+
+Generate server certificate/key pair 
+        - no password required. 
+		openssl genrsa -out server.key 2048
+		openssl req -key server.key -new -out server.csr
+		openssl x509 -req -days 3650 -in server.csr -CA ca.pem -CAkey privkey.pem -CAserial file.srl -out server.pem 
+#        -contents of "file.srl" is a two digit number.  eg. "00"
+
+#Generate client certificate/key pair
+
+#5    Either choose to encrypt the key(a) or not(b) 
+#        a. Encrypt the client key with a passphrase 
+            openssl genrsa -des3 -out client.key 2048
+#        b. Don't encrypt the client key 
+			            openssl genrsa -out client.key 2048
+						openssl req -key client.key -new -out client.csr
+						openssl x509 -req -days 365 -in client.csr -CA ca.pem -CAkey privkey.pem -CAserial file.srl -out client.pem 
+#        -contents of "file.srl" is a two digit number.  eg. "00"
+
+#8)    DONE
+
+
+#for client:
+openssl pkcs12 -export -in client.pem -inkey client.key -out keystore.p12 -name your.domain.net -CAfile ca.pem
+keytool -importkeystore -deststorepass supersecretpass -destkeypass supersecretpass -destkeystore mystore.bks -deststoretype BKS -srckeystore keystore.p12 -srcstoretype PKCS12 -alias your.domain.net
+
+
+

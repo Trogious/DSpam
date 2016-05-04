@@ -10,41 +10,38 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.Enumeration;
 
 public class LaunchActivity extends AppCompatActivity {
     private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
     private TcpClient tcpClient;
     private final LaunchActivity self = this;
+    private static LaunchActivity SELF;
     private TextView bottomtext;
     private StringBuilder sending = new StringBuilder("sending request");
     public static InputStream inputStream;
+
+    public static InputStream getInputStream() {
+        return SELF.getResources().openRawResource(R.raw.mystore);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
-        inputStream = getResources().openRawResource(R.raw.clientkeystore);
+        SELF = this;
 
         bottomtext = (TextView) findViewById(R.id.bottomtext);
 
-        boolean networkOk = true;
-/*
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            Log.i("Debug", "network OK");
-            networkOk = true;
-        } else {
-            Log.i("Debug", "network FAILED");
-        }
-*/
-
-        if (networkOk) {
-            startTcpClient();
-        }
+        startTcpClient();
 
         findViewById(R.id.imageView).setOnClickListener(new View.OnClickListener() {
             @Override

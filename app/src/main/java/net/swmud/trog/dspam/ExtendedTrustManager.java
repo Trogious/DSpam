@@ -47,7 +47,8 @@ public class ExtendedTrustManager implements X509TrustManager {
 
     @Override
     public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-        throw new CertificateException("This trust manager validates onlu server certificates");
+        Log.e("AUTH", "checkClientTrusted");
+        throw new CertificateException("This trust manager validates only server certificates");
     }
 
     @Override
@@ -57,7 +58,7 @@ public class ExtendedTrustManager implements X509TrustManager {
         }
         acceptedIssuer = chain[0];
 
-        Log.e("AUTH", "authType: " + authType);
+        Log.e("AUTH", "_authType: " + authType);
 
         for (X509TrustManager trustManager : trustManagers) {
             try {
@@ -73,6 +74,7 @@ public class ExtendedTrustManager implements X509TrustManager {
 
     @Override
     public X509Certificate[] getAcceptedIssuers() {
+        Log.e("AUTH", "getAcceptedIssuers");
         return new X509Certificate[]{acceptedIssuer};
     }
 }
