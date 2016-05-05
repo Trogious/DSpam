@@ -1,7 +1,9 @@
 package net.swmud.trog.dspam;
 
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -10,14 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.util.Enumeration;
 
 public class LaunchActivity extends AppCompatActivity {
     private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
@@ -38,8 +33,12 @@ public class LaunchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_launch);
 
         SELF = this;
-
         bottomtext = (TextView) findViewById(R.id.bottomtext);
+
+
+        Global.keyStores = new KeyStores(Environment.getExternalStorageDirectory().getPath());
+
+
 
         startTcpClient();
 

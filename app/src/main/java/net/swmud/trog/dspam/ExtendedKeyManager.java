@@ -3,7 +3,6 @@ package net.swmud.trog.dspam;
 import android.util.Log;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -13,43 +12,22 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import javax.net.ssl.X509ExtendedKeyManager;
 import javax.net.ssl.X509KeyManager;
 
 public class ExtendedKeyManager implements X509KeyManager {
 
     private X509KeyManager defaultKeyManager;
     private Properties serverMap = new Properties();
-    private KeyStore ks = null;
-
-    public ExtendedKeyManager() {
-        try {
-            Log.e("KM", "ks type: " + KeyStore.getDefaultType());
-            ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(LaunchActivity.getInputStream(), "dupa.12".toCharArray());
-            Enumeration<String> aliases = ks.aliases();
-            Log.e("KM", "keystore loaded");
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    private KeyStore ks = Global.keyStores.getClientKeyStore();
 
     @Override
     public String chooseClientAlias(String[] strings, Principal[] principals, Socket socket) {
@@ -102,7 +80,7 @@ public class ExtendedKeyManager implements X509KeyManager {
     }
 
     @Override
-    public String[] getServerAliases(String s, Principal[] principals) {
+    public String[] getServerAliases(String alias, Principal[] principals) {
         Log.e("KM", "getServerAliases");
         return new String[0];
     }
@@ -143,28 +121,5 @@ public class ExtendedKeyManager implements X509KeyManager {
         }
 
         return null;
-    }
-
-    private static class KeyWrapper implements PrivateKey {
-        private Key key;
-
-        KeyWrapper(Key key) {
-            this.key = key;
-        }
-
-        @Override
-        public String getAlgorithm() {
-            return key.getAlgorithm();
-        }
-
-        @Override
-        public String getFormat() {
-            return key.getFormat();
-        }
-
-        @Override
-        public byte[] getEncoded() {
-            return key.getEncoded();
-        }
     }
 }

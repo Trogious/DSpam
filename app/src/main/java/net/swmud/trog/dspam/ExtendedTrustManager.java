@@ -7,7 +7,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.net.ssl.TrustManager;
@@ -16,10 +16,10 @@ import javax.net.ssl.X509TrustManager;
 
 public class ExtendedTrustManager implements X509TrustManager {
     protected X509Certificate acceptedIssuer;
-    protected List<X509TrustManager> trustManagers = new ArrayList<X509TrustManager>();
+    protected List<X509TrustManager> trustManagers = new LinkedList<>();
 
     protected ExtendedTrustManager() throws NoSuchAlgorithmException, KeyStoreException {
-        final ArrayList<TrustManagerFactory> factories = new ArrayList<>();
+        final List<TrustManagerFactory> factories = new LinkedList<>();
 
         // The default Trustmanager with default keystore
         final TrustManagerFactory original = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
