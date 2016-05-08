@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="net.swmud.trog.dspam.SettingsActivity">
+    tools:context=".gui.SettingsActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
         android:ems="5"
         android:textAlignment="textEnd"
         android:layout_marginTop="20dp"
-        android:hint="port number"/>
+        android:hint="port"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -84,6 +84,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        />
+        android:background="@android:drawable/btn_default"/>
 
 </RelativeLayout>

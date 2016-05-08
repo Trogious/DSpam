@@ -1,4 +1,4 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.core;
 
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -16,7 +16,7 @@ import java.util.Enumeration;
 public class KeyStores {
     /* bcprov-jdk15on-154.jar */
     private static final String KEY_DATA_DIR = "DSpam";
-    private static final char[] KEY_STORE_PASSWORD = "dspamstorepass".toCharArray();
+    private static final char[] KEY_STORE_PASSWORD = "dupa.12".toCharArray();
     private static final String KEY_STORE_CLIENT = "dspamstoreclient.bks";
     private static final String KEY_STORE_TRUST = "dspamstoretrust.bks";
     private static final String KEY_STORE_ISSUER = "dspamstoretrust.bks";

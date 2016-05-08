@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="5dp"
-    tools:context="net.swmud.trog.dspam.DetailsActivity">
+    tools:context=".gui.DetailsActivity">
 
     <TextView
         android:id="@+id/from"

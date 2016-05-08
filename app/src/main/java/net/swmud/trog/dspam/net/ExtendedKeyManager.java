@@ -1,8 +1,9 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.net;
 
 import android.util.Log;
 
-import java.io.IOException;
+import net.swmud.trog.dspam.core.Global;
+
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -14,7 +15,6 @@ import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -63,7 +63,7 @@ public class ExtendedKeyManager implements X509KeyManager {
                 List<X509Certificate> certList = new ArrayList<>();
                 for (Certificate c : chain) {
                     certList.add((X509Certificate) c);
-                    Log.d("KM", "chain cert: " + c.toString());
+//                    Log.d("KM", "chain cert: " + c.toString());
                 }
                 return certList.toArray(new X509Certificate[certList.size()]);
             } catch (KeyStoreException e) {
@@ -93,21 +93,13 @@ public class ExtendedKeyManager implements X509KeyManager {
             try {
                 Enumeration<String> as = ks.aliases();
                 Log.d("KM", "has swmud: " + ks.containsAlias("swmud.net"));
-                Certificate cert = ks.getCertificate(alias);
-                if (cert != null) {
-/*
-                    Log.d("KM", "swmud cert: " + cert.toString());
-                    Key pubKey = cert.getPublicKey();
-                    Log.d("KM", "swmud publickey: " + pubKey.toString());
-*/
-                }
                 Log.d("KM", "aliases:");
                 while (as.hasMoreElements()) {
                     String a = as.nextElement();
                     Log.e("KM", " " + a);
                 }
                 Key key = (PrivateKey) ks.getKey(alias, "dupa.12".toCharArray());
-                Log.e("KM", "privateKey: " + key.toString());
+//                Log.e("KM", "privateKey: " + key.toString());
                 return (PrivateKey) key;
             } catch (KeyStoreException e) {
                 e.printStackTrace();

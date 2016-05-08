@@ -1,6 +1,5 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.gui;
 
-import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,33 +11,31 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.io.InputStream;
+import net.swmud.trog.dspam.R;
+import net.swmud.trog.dspam.core.BackgroundExecutor;
+import net.swmud.trog.dspam.core.Global;
+import net.swmud.trog.dspam.core.KeyStores;
+import net.swmud.trog.dspam.core.Settings;
+import net.swmud.trog.dspam.net.TcpClient;
 
 public class LaunchActivity extends AppCompatActivity {
-    private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
-    private TcpClient tcpClient;
+    private static final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
+    static TcpClient tcpClient;
     private final LaunchActivity self = this;
-    private static LaunchActivity SELF;
     private TextView bottomtext;
     private StringBuilder sending = new StringBuilder("sending request");
-    public static InputStream inputStream;
 
-    public static InputStream getInputStream() {
-        return SELF.getResources().openRawResource(R.raw.mystore);
-    }
+//    public static InputStream getInputStream() {
+//        return SELF.getResources().openRawResource(R.raw.mystore);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
-        SELF = this;
-        bottomtext = (TextView) findViewById(R.id.bottomtext);
-
-
         Global.keyStores = new KeyStores(Environment.getExternalStorageDirectory().getPath());
-
-
+        bottomtext = (TextView) findViewById(R.id.bottomtext);
 
         startTcpClient();
 
@@ -50,14 +47,18 @@ public class LaunchActivity extends AppCompatActivity {
                 } else {
                     sending.append(".");
                     bottomtext.setText(sending.toString());
-                    backgroundExecutor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            tcpClient.sendMessage("{\"dspam\":0}");
-                        }
-                    });
+                    sendMessage("{\"dspam\":0}");
                     Log.i("Debug", "onButtonSend2");
                 }
+            }
+        });
+    }
+
+    static void sendMessage(final String msg) {
+        backgroundExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                tcpClient.sendMessage(msg);
             }
         });
     }
@@ -94,6 +95,7 @@ public class LaunchActivity extends AppCompatActivity {
         sending = new StringBuilder("sending request");
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         MenuInflater inflater = getMenuInflater();
@@ -108,6 +110,7 @@ public class LaunchActivity extends AppCompatActivity {
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case R.id.action_exit:
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -117,6 +120,14 @@ public class LaunchActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    @Override
+    public void finish() {
+        if (tcpClient != null) {
+            tcpClient.finish();
+        }
+        super.finish();
     }
 
     @Override

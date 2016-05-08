@@ -1,6 +1,9 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.core;
 
 import com.google.gson.Gson;
+
+import net.swmud.trog.dspam.json.Dspam;
+import net.swmud.trog.dspam.json.DspamEntry;
 
 public class DspamLogs {
     public Dspam parse(String logs) {

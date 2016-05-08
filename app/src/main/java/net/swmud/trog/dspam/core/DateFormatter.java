@@ -1,4 +1,4 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.core;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="net.swmud.trog.dspam.HistoryActivity">
+    tools:context=".gui.HistoryActivity">
 
     <ListView
         android:id="@+id/list"
@@ -13,4 +13,15 @@
         android:divider="@color/list_divider"
         android:dividerHeight="1dp"
         android:listSelector="@drawable/list_row_selector" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Retrain Selected"
+        android:id="@+id/buttonRetrainSelected"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:visibility="gone"
+        android:background="@android:drawable/btn_default"/>
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.net;
 
 import android.util.Log;
 

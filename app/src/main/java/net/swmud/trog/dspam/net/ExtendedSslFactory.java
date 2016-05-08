@@ -1,4 +1,6 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.net;
+
+import net.swmud.trog.dspam.core.Constants;
 
 import java.io.IOException;
 import java.net.InetAddress;

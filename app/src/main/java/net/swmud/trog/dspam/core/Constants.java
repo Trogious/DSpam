@@ -1,4 +1,4 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.core;
 
 public interface Constants {
     String ENCODING = "UTF-8";

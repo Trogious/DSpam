@@ -1,4 +1,4 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.json;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -184,7 +184,7 @@ public class DspamEntry implements Serializable {
         }
     }
 
-    void setDate() {
+    public void setDate() {
         long tstamp = 0;
         try {
             tstamp = Long.parseLong(timestamp);
@@ -195,7 +195,7 @@ public class DspamEntry implements Serializable {
         date = calendar.getTime();
     }
 
-    Date getDate() {
+    public Date getDate() {
         return date;
     }
 

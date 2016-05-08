@@ -1,6 +1,8 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.net;
 
 import android.util.Log;
+
+import net.swmud.trog.dspam.core.Global;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -25,13 +27,10 @@ public class ExtendedTrustManager implements X509TrustManager {
         final TrustManagerFactory original = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         original.init((KeyStore) null);
         factories.add(original);
-/*
-            for( KeyStore keyStore : additionalkeyStores ) {
-                final TrustManagerFactory additionalCerts = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-                additionalCerts.init(keyStore);
-                factories.add(additionalCerts);
-            }
-*/
+
+        final TrustManagerFactory additionalCerts = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        additionalCerts.init(Global.keyStores.getTrustKeyStore());
+        factories.add(additionalCerts);
 
         for (TrustManagerFactory trustManagerFactory : factories) {
             for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
@@ -42,7 +41,7 @@ public class ExtendedTrustManager implements X509TrustManager {
         }
 
         if (trustManagers.size() < 1)
-            throw new RuntimeException("No X509TrustManagers available."); //TODO: use more meaningful exception class
+            throw new KeyStoreException("No X509TrustManagers available.");
     }
 
     @Override

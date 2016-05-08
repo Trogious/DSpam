@@ -1,4 +1,4 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.gui;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,9 +7,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.google.gson.Gson;
+
+import net.swmud.trog.dspam.R;
+import net.swmud.trog.dspam.core.DateFormatter;
+import net.swmud.trog.dspam.json.DspamEntry;
+import net.swmud.trog.dspam.json.RetrainRequest;
 
 public class DetailsActivity extends Activity {
     private final DetailsActivity self = this;
@@ -29,7 +32,7 @@ public class DetailsActivity extends Activity {
         final TextView messageId = (TextView) findViewById(R.id.messageId);
         final Button retrain = (Button) findViewById(R.id.retrainButton);
 
-        DspamEntry entry = (DspamEntry) getIntent().getSerializableExtra("entry");
+        final DspamEntry entry = (DspamEntry) getIntent().getSerializableExtra("entry");
 
         from.setText(entry.getFrom());
         date.setText(DateFormatter.format(entry.getDate()));
@@ -43,7 +46,11 @@ public class DetailsActivity extends Activity {
         retrain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(self, "Not yet implemented. :-(", Toast.LENGTH_SHORT).show();
+                RetrainRequest retrainRequest = new RetrainRequest(entry);
+                Gson gson = new Gson();
+                String jsonStr = gson.toJson(retrainRequest);
+                LaunchActivity.sendMessage(jsonStr);
+                Toast.makeText(self, jsonStr, Toast.LENGTH_SHORT).show();
             }
         });
     }

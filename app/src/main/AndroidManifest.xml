@@ -11,18 +11,18 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LaunchActivity">
+        <activity android:name=".gui.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".HistoryActivity">
+        <activity android:name=".gui.HistoryActivity">
         </activity>
-        <activity android:name=".DetailsActivity">
+        <activity android:name=".gui.DetailsActivity">
         </activity>
-        <activity android:name=".SettingsActivity">
+        <activity android:name=".gui.SettingsActivity">
         </activity>
     </application>
 

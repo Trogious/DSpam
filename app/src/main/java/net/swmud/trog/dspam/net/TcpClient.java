@@ -1,6 +1,9 @@
-package net.swmud.trog.dspam;
+package net.swmud.trog.dspam.net;
 
 import android.util.Log;
+
+import net.swmud.trog.dspam.core.Constants;
+import net.swmud.trog.dspam.core.DateFormatter;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,7 +38,7 @@ public class TcpClient implements Runnable {
     private Listener msgListener;
     private Listener errListener;
 
-    TcpClient(String host, int port, Listener<String> msgListener, Listener<String> errListener) {
+    public TcpClient(String host, int port, Listener<String> msgListener, Listener<String> errListener) {
         this.host = host;
         this.port = port;
         this.msgListener = msgListener;
@@ -55,7 +58,7 @@ public class TcpClient implements Runnable {
 
             SSLSocket sock = createSslSocket(socket);
             sock.startHandshake();
-            examineSslSocket(sock);
+//            examineSslSocket(sock);
 
             synchronized (sock) {
                 mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(sock.getOutputStream())), true);
