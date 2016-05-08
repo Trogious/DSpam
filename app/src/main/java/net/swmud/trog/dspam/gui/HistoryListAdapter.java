@@ -26,7 +26,6 @@ public class HistoryListAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private Dspam dspam;
     private boolean[] positionsChecked;
-    private int position = -1;
 
     public HistoryListAdapter(HistoryActivity activity, Dspam dspam) {
         this.activity = activity;
@@ -51,22 +50,20 @@ public class HistoryListAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        this.position = position;
         if (inflater == null)
-            inflater = (LayoutInflater) activity
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
         }
         convertView = inflater.inflate(R.layout.list_row, null);
 
         final View cv = convertView;
-        TextView status = (TextView) convertView
-                .findViewById(R.id.status);
+        TextView status = (TextView) convertView.findViewById(R.id.status);
         TextView from = (TextView) convertView.findViewById(R.id.from);
         TextView signature = (TextView) convertView.findViewById(R.id.signature);
         TextView receivedDate = (TextView) convertView.findViewById(R.id.date);
         TextView subject = (TextView) convertView.findViewById(R.id.subject);
         final CheckBox retrainBox = (CheckBox) convertView.findViewById(R.id.checkBoxRetrainSelected);
+        final Button retrainButton = (Button) activity.findViewById(R.id.buttonRetrainSelected);
 
         final DspamEntry entry = dspam.dspam.get(position);
 
@@ -125,11 +122,27 @@ public class HistoryListAdapter extends BaseAdapter {
         } else if (positionsChecked[position]) {
             retrainBox.setChecked(true);
         }
-//        retrainBox.setText("" + position);
+
+        retrainButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RetrainRequest retrainRequest = new RetrainRequest(dspam, positionsChecked);
+                Gson gson = new Gson();
+                String jsonStr = gson.toJson(retrainRequest);
+                LaunchActivity.sendMessage(jsonStr);
+                Toast.makeText(activity, jsonStr, Toast.LENGTH_LONG).show();
+            }
+        });
+
         retrainBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 positionsChecked[position] = checked;
+                if (!checked && countChecked() < 1) {
+                    activity.checkboxesVisible = View.GONE;
+                    retrainButton.setVisibility(activity.checkboxesVisible);
+                    notifyDataSetChanged();
+                }
             }
         });
 
@@ -142,29 +155,38 @@ public class HistoryListAdapter extends BaseAdapter {
             }
         });
 
-
         convertView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 activity.checkboxesVisible = (activity.checkboxesVisible == View.GONE) ? View.VISIBLE : View.GONE;
-                Button retrainButton = (Button) activity.findViewById(R.id.buttonRetrainSelected);
                 retrainButton.setVisibility(activity.checkboxesVisible);
-                positionsChecked[position] = (activity.checkboxesVisible == View.VISIBLE);
-                retrainButton.setOnClickListener((activity.checkboxesVisible == View.GONE) ? null : new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        RetrainRequest retrainRequest = new RetrainRequest(dspam, positionsChecked);
-                        Gson gson = new Gson();
-                        String jsonStr = gson.toJson(retrainRequest);
-                        LaunchActivity.sendMessage(jsonStr);
-                        Toast.makeText(activity, jsonStr, Toast.LENGTH_LONG).show();
-                    }
-                });
+                if (activity.checkboxesVisible == View.GONE) {
+                    checkAll(false);
+                } else {
+                    positionsChecked[position] = true;
+                }
                 notifyDataSetChanged();
                 return true;
             }
         });
 
         return convertView;
+    }
+
+    private void checkAll(boolean checked) {
+        for (int i = 0; i < positionsChecked.length; ++i) {
+            positionsChecked[i] = checked;
+        }
+    }
+
+    private int countChecked() {
+        int checked = 0;
+        for (int i = 0; i < positionsChecked.length; ++i) {
+            if (positionsChecked[i]) {
+                ++checked;
+            }
+        }
+
+        return checked;
     }
 }
