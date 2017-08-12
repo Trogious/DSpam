@@ -19,6 +19,7 @@ public class Settings {
     private static final String SETTINGS_FILE_NAME = "dspamsettings";
     private static final int SETTINGS_READ_SIZE = 1024;
     private static final String SETTING_SEPARATOR = "\n";
+    private static Settings instance;
 
     private String host = "";
     private int port = 0;
@@ -26,19 +27,28 @@ public class Settings {
 
     public Settings() {}
 
-    public Settings(String host, int port, String password) {
-        this.host = host;
-        this.port = port;
-        this.password = password;
-    }
-
     public static String getAndroidId(Context context) {
         return Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
     }
 
     public static Settings loadSettings(Context context) {
-        Settings settings = new Settings();
+        Settings settings = getInstance();
         settings.load(context);
+        return settings;
+    }
+
+    public static Settings getInstance() {
+        if (null == instance) {
+            instance = new Settings();
+        }
+        return instance;
+    }
+
+    public static Settings set(String host, int port, String password) {
+        Settings settings = getInstance();
+        settings.host = host;
+        settings.port = port;
+        settings.password = password;
         return settings;
     }
 
@@ -50,7 +60,7 @@ public class Settings {
             int bytesRead = inputStream.read(buf);
             if (bytesRead > 0) {
                 String settingsStr = new String(buf, 0, bytesRead, Constants.ENCODING);
-                Log.e("LOAD", settingsStr);
+                Log.d("LOAD", settingsStr);
                 String setStr[] = settingsStr.split(SETTING_SEPARATOR);
                 if (setStr != null && setStr.length > 2) {
                     host = setStr[0];

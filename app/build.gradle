@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "24.0.0 rc3"
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "net.swmud.trog.dspam"
@@ -29,11 +29,12 @@ dependencies {
 }
 
 
-task copywww(dependsOn: ['packageDebug', 'zipalignDebug'], type: Copy) {
+task copywww(dependsOn: ['packageDebug'], type: Copy) {
     from ('build/outputs/apk')
     include '*.apk'
     destinationDir file('/home/dupa/www')
 }
 
-
-assembleDebug.dependsOn copywww
+afterEvaluate {
+    assembleDebug.dependsOn copywww
+}

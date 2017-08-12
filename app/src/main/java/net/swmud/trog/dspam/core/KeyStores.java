@@ -19,11 +19,13 @@ public class KeyStores {
     private static final char[] KEY_STORE_PASSWORD = "dupa.12".toCharArray();
     private static final String KEY_STORE_CLIENT = "dspamstoreclient.bks";
     private static final String KEY_STORE_TRUST = "dspamstoretrust.bks";
-    private static final String KEY_STORE_ISSUER = "dspamstoretrust.bks";
-    private String dataDirectory;
+    private static final String KEY_STORE_ISSUER = KEY_STORE_TRUST;
+    private final String dataDirectory;
+    private final PasswordProvider privateKeyPasswordProvider;
 
-    public KeyStores(String dataDirectory) {
+    public KeyStores(String dataDirectory, PasswordProvider passwordProvider) {
         this.dataDirectory = dataDirectory;
+        this.privateKeyPasswordProvider = passwordProvider;
     }
 
     @Nullable
@@ -41,6 +43,11 @@ public class KeyStores {
         return loadKeyStore(KEY_STORE_ISSUER);
     }
 
+
+    public char[] getPrivateKeyPassword() {
+        return privateKeyPasswordProvider.getPassword().toCharArray();
+    }
+
     @Nullable
     private KeyStore loadKeyStore(String keyStoreFileName) {
         File path = new File(new File(dataDirectory, KEY_DATA_DIR), keyStoreFileName);
@@ -48,23 +55,23 @@ public class KeyStores {
             FileInputStream ksInputStream = new FileInputStream(path);
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
             ks.load(ksInputStream, KEY_STORE_PASSWORD);
-            Log.e("KSs", "loaded key store: " + path.getAbsolutePath());
+            Log.d("KSs", "loaded key store: " + path.getAbsolutePath());
             Enumeration<String> as = ks.aliases();
             while (as.hasMoreElements()) {
                 String a = as.nextElement();
-                Log.e("KSs", " " + a);
+                Log.d("KSs", " " + a);
             }
             return ks;
         } catch (KeyStoreException e) {
-            Log.e("KSs", e.getMessage());
+            Log.d("KSs", e.getMessage());
         } catch (CertificateException e) {
-            Log.e("KSs", e.getMessage());
+            Log.d("KSs", e.getMessage());
         } catch (NoSuchAlgorithmException e) {
-            Log.e("KSs", e.getMessage());
+            Log.d("KSs", e.getMessage());
         } catch (FileNotFoundException e) {
-            Log.e("KSs", e.getMessage());
+            Log.d("KSs", e.getMessage());
         } catch (IOException e) {
-            Log.e("KSs", e.getMessage());
+            Log.d("KSs", e.getMessage());
         }
 
         return null;

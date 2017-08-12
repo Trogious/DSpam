@@ -7,111 +7,129 @@ import net.swmud.trog.dspam.core.Global;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.X509KeyManager;
 
 public class ExtendedKeyManager implements X509KeyManager {
+    protected List<X509KeyManager> keyManagers = new LinkedList<>();
+    protected KeyStore ks = Global.keyStores.getClientKeyStore();
 
-    private X509KeyManager defaultKeyManager;
-    private Properties serverMap = new Properties();
-    private KeyStore ks = Global.keyStores.getClientKeyStore();
+    protected ExtendedKeyManager() throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+        final List<KeyManagerFactory> factories = new LinkedList<>();
 
-    @Override
-    public String chooseClientAlias(String[] strings, Principal[] principals, Socket socket) {
-        Log.e("KM", "chooseClientAlias");
-        SocketAddress socketAddress = socket.getRemoteSocketAddress();
-        String hostName = ((InetSocketAddress) socketAddress).getHostName().toUpperCase();
-        Log.e("KM", "hostname: " + hostName);
-        String alias = null;
-        if (serverMap.containsKey(hostName)) {
-            alias = serverMap.getProperty(hostName.toUpperCase());
-            if (alias != null && alias.length() == 0) {
-                alias = null;
+        // The default KeyManager with default keystore
+        final KeyManagerFactory original = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        original.init(null, "".toCharArray());
+
+        final KeyManagerFactory additionalCerts = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        additionalCerts.init(Global.keyStores.getClientKeyStore(), Global.keyStores.getPrivateKeyPassword());
+
+        factories.add(additionalCerts);
+        factories.add(original);
+
+        for (KeyManagerFactory trustManagerFactory : factories) {
+            for (KeyManager keyManager : trustManagerFactory.getKeyManagers()) {
+                if (keyManager instanceof X509KeyManager) {
+                    keyManagers.add((X509KeyManager) keyManager);
+                }
             }
-        } else {
-            alias = null;//defaultKeyManager.chooseClientAlias(keyType, issuers, socket);
         }
-        return "swmud.net";
+
+        if (keyManagers.size() < 1)
+            throw new KeyStoreException("No X509KeyManagers available.");
+    }
+
+    protected boolean aliasMatches(String hostName, String alias) {
+        return hostName.equalsIgnoreCase(alias);
     }
 
     @Override
-    public String chooseServerAlias(String s, Principal[] principals, Socket socket) {
-        Log.e("KM", "chooseServerAlias");
+    public String chooseClientAlias(String[] keyTypes, Principal[] issuers, Socket socket) {
+        Log.d("KM", "chooseClientAlias");
+        SocketAddress socketAddress = socket.getRemoteSocketAddress();
+        String hostName = ((InetSocketAddress) socketAddress).getHostName();
+        for (X509KeyManager km : keyManagers) {
+            for (String keyType : keyTypes) {
+                String[] aliases = km.getClientAliases(keyType, issuers);
+                if (null != aliases) {
+                    for (String alias : aliases) {
+                        Log.d("KM", "alias: " + alias);
+                        if (aliasMatches(hostName, alias)) {
+                            Log.d("KM", "alias chosen: " + alias);
+                            return alias;
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
+        Log.d("KM", "chooseServerAlias");
         return null;
     }
 
     @Override
     public X509Certificate[] getCertificateChain(String alias) {
-        Log.e("KM", "getCertificateChain");
-        if (ks != null) {
-            Log.d("KM", "ks NOT null");
-            try {
-                Certificate[] chain = ks.getCertificateChain(alias);
-                List<X509Certificate> certList = new ArrayList<>();
-                for (Certificate c : chain) {
-                    certList.add((X509Certificate) c);
-//                    Log.d("KM", "chain cert: " + c.toString());
-                }
-                return certList.toArray(new X509Certificate[certList.size()]);
-            } catch (KeyStoreException e) {
-                e.printStackTrace();
+        Log.d("KM", "getCertificateChain");
+        for (X509KeyManager km : keyManagers) {
+            X509Certificate[] chain = km.getCertificateChain(alias);
+            if (null != chain && chain.length > 0) {
+                return chain;
             }
         }
+
         return new X509Certificate[0];
     }
 
     @Override
-    public String[] getClientAliases(String alias, Principal[] principals) {
-        Log.e("KM", "getClientAliases");
-        return new String[0];
+    public String[] getClientAliases(String keyType, Principal[] issuers) {
+        Log.d("KM", "getClientAliases");
+        List<String> aliases = new LinkedList<>();
+        for (X509KeyManager km : keyManagers) {
+            String[] clientAliases = km.getClientAliases(keyType, issuers);
+            if (null != clientAliases) {
+                Log.d("KM", "client aliases found");
+                aliases.addAll(Arrays.asList(clientAliases));
+            }
+        }
+
+        return aliases.toArray(new String[aliases.size()]);
     }
 
     @Override
-    public String[] getServerAliases(String alias, Principal[] principals) {
-        Log.e("KM", "getServerAliases");
+    public String[] getServerAliases(String keyType, Principal[] issuers) {
+        Log.d("KM", "getServerAliases");
         return new String[0];
     }
 
     @Override
     public PrivateKey getPrivateKey(String alias) {
-        Log.e("KM", "getPrivateKey1");
-        if (ks != null) {
-            Log.d("KM", "ks NOT null");
-            try {
-                Enumeration<String> as = ks.aliases();
-                Log.d("KM", "has swmud: " + ks.containsAlias("swmud.net"));
-                Log.d("KM", "aliases:");
-                while (as.hasMoreElements()) {
-                    String a = as.nextElement();
-                    Log.e("KM", " " + a);
-                }
-                Key key = (PrivateKey) ks.getKey(alias, "dupa.12".toCharArray());
-//                Log.e("KM", "privateKey: " + key.toString());
-                return (PrivateKey) key;
-            } catch (KeyStoreException e) {
-                e.printStackTrace();
-            } catch (UnrecoverableKeyException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
+        Log.d("KM", "getPrivateKey for: " + alias);
+        PrivateKey privateKey = null;
+        for (X509KeyManager km : keyManagers) {
+            privateKey = km.getPrivateKey(alias);
+            if (null != privateKey) {
+                Log.d("KM", "key found");
+                break;
             }
         }
 
-        return null;
+        return privateKey;
     }
 }

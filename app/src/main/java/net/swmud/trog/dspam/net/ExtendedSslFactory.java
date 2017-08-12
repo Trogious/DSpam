@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
@@ -18,7 +19,7 @@ public class ExtendedSslFactory extends SSLSocketFactory {
     protected static final SSLSocketFactory SOCKET_FACTORY = (SSLSocketFactory) SSLSocketFactory.getDefault();
     protected SSLContext sslContext = SSLContext.getInstance(Constants.SECURE_PROTOCOL);
 
-    public ExtendedSslFactory() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+    public ExtendedSslFactory() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
         sslContext.init(new KeyManager[]{new ExtendedKeyManager()}, new TrustManager[]{new ExtendedTrustManager()}, null);
     }
 

@@ -15,6 +15,7 @@ import net.swmud.trog.dspam.R;
 import net.swmud.trog.dspam.core.BackgroundExecutor;
 import net.swmud.trog.dspam.core.Global;
 import net.swmud.trog.dspam.core.KeyStores;
+import net.swmud.trog.dspam.core.PasswordProvider;
 import net.swmud.trog.dspam.core.Settings;
 import net.swmud.trog.dspam.net.TcpClient;
 
@@ -24,6 +25,7 @@ public class LaunchActivity extends AppCompatActivity {
     private final LaunchActivity self = this;
     private TextView bottomtext;
     private StringBuilder sending = new StringBuilder("sending request");
+    private Settings settings = null;
 
 //    public static InputStream getInputStream() {
 //        return SELF.getResources().openRawResource(R.raw.mystore);
@@ -34,7 +36,13 @@ public class LaunchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
-        Global.keyStores = new KeyStores(Environment.getExternalStorageDirectory().getPath());
+        settings = Settings.loadSettings(this);
+        Global.keyStores = new KeyStores(Environment.getExternalStorageDirectory().getPath(), new PasswordProvider() {
+            @Override
+            public String getPassword() {
+                return settings.getPassword();
+            }
+        });
         bottomtext = (TextView) findViewById(R.id.bottomtext);
 
         startTcpClient();
@@ -68,7 +76,7 @@ public class LaunchActivity extends AppCompatActivity {
         if (tcpClient != null) {
             tcpClient.finish();
         }
-        final Settings settings = Settings.loadSettings(this);
+//        settings = Settings.loadSettings(this);
         tcpClient = new TcpClient(settings.getHost(), settings.getPort(),
                 new TcpClient.Listener<String>() {
                     @Override
@@ -97,7 +105,6 @@ public class LaunchActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return true;

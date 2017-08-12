@@ -41,7 +41,7 @@ public class SettingsActivity extends Activity {
                 }
                 String password = passwordView.getText().toString();
 
-                new Settings(host, port, password).save(self);
+                Settings.set(host, port, password).save(self);
                 Toast.makeText(self, "Settings saved.", Toast.LENGTH_SHORT).show();
             }
         });

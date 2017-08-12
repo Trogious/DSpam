@@ -23,19 +23,20 @@ public class ExtendedTrustManager implements X509TrustManager {
     protected ExtendedTrustManager() throws NoSuchAlgorithmException, KeyStoreException {
         final List<TrustManagerFactory> factories = new LinkedList<>();
 
-        // The default Trustmanager with default keystore
+        // The default TrustManager with default keystore
         final TrustManagerFactory original = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         original.init((KeyStore) null);
-        factories.add(original);
 
         final TrustManagerFactory additionalCerts = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         additionalCerts.init(Global.keyStores.getTrustKeyStore());
+
         factories.add(additionalCerts);
+        factories.add(original);
 
         for (TrustManagerFactory trustManagerFactory : factories) {
-            for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
-                if (trustManager instanceof X509TrustManager) {
-                    trustManagers.add((X509TrustManager) trustManager);
+            for (TrustManager tm : trustManagerFactory.getTrustManagers()) {
+                if (tm instanceof X509TrustManager) {
+                    trustManagers.add((X509TrustManager) tm);
                 }
             }
         }
@@ -46,7 +47,7 @@ public class ExtendedTrustManager implements X509TrustManager {
 
     @Override
     public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-        Log.e("AUTH", "checkClientTrusted");
+        Log.d("AUTH", "checkClientTrusted");
         throw new CertificateException("This trust manager validates only server certificates");
     }
 
@@ -55,13 +56,11 @@ public class ExtendedTrustManager implements X509TrustManager {
         if (chain == null || chain.length < 1) {
             throw new CertificateException("x509 cert chain empty");
         }
-        acceptedIssuer = chain[0];
+        Log.d("AUTH", "_authType: " + authType);
 
-        Log.e("AUTH", "_authType: " + authType);
-
-        for (X509TrustManager trustManager : trustManagers) {
+        for (X509TrustManager tm : trustManagers) {
             try {
-                trustManager.checkServerTrusted(chain, authType);
+                tm.checkServerTrusted(chain, authType);
                 return;
             } catch (CertificateException e) {
             }
@@ -73,7 +72,15 @@ public class ExtendedTrustManager implements X509TrustManager {
 
     @Override
     public X509Certificate[] getAcceptedIssuers() {
-        Log.e("AUTH", "getAcceptedIssuers");
-        return new X509Certificate[]{acceptedIssuer};
+        Log.d("AUTH", "getAcceptedIssuers");
+        for (X509TrustManager tm : trustManagers) {
+            X509Certificate[] issuers = tm.getAcceptedIssuers();
+            if (null != issuers && issuers.length > 0) {
+                Log.d("AUTH", "returning issuers: " + issuers.length);
+                return issuers;
+            }
+
+        }
+        return new X509Certificate[0];
     }
 }

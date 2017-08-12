@@ -19,6 +19,7 @@ import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
@@ -78,6 +79,9 @@ public class TcpClient implements Runnable {
             handleException(e);
             return;
         } catch (KeyStoreException e) {
+            handleException(e);
+            return;
+        } catch (UnrecoverableKeyException e) {
             handleException(e);
             return;
         }
@@ -160,7 +164,7 @@ public class TcpClient implements Runnable {
         void onMessage(T msg);
     }
 
-    private SSLSocket createSslSocket(Socket socket) throws NoSuchAlgorithmException, KeyManagementException, IOException, KeyStoreException {
+    private SSLSocket createSslSocket(Socket socket) throws NoSuchAlgorithmException, KeyManagementException, IOException, KeyStoreException, UnrecoverableKeyException {
         SSLSocketFactory sf = new ExtendedSslFactory();//(SSLSocketFactory) SSLSocketFactory.getDefault();
         SSLSocket sock = (SSLSocket) sf.createSocket(socket, host, port, true);
         sock.setEnabledProtocols(new String[]{Constants.SECURE_PROTOCOL});
