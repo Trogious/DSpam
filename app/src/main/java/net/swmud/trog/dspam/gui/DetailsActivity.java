@@ -7,8 +7,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-
 import net.swmud.trog.dspam.R;
 import net.swmud.trog.dspam.core.DateFormatter;
 import net.swmud.trog.dspam.json.DspamEntry;
@@ -47,8 +45,7 @@ public class DetailsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 RetrainRequest retrainRequest = new RetrainRequest(entry);
-                Gson gson = new Gson();
-                String jsonStr = gson.toJson(retrainRequest);
+                String jsonStr = retrainRequest.getJsonRpcRequest();
                 LaunchActivity.sendMessage(jsonStr);
                 Toast.makeText(self, jsonStr, Toast.LENGTH_SHORT).show();
             }

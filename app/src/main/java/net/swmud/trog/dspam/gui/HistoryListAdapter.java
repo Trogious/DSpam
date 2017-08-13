@@ -12,35 +12,34 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-
 import net.swmud.trog.dspam.R;
 import net.swmud.trog.dspam.core.DateFormatter;
-import net.swmud.trog.dspam.json.Dspam;
 import net.swmud.trog.dspam.json.DspamEntry;
 import net.swmud.trog.dspam.json.RetrainRequest;
+
+import java.util.List;
 
 
 public class HistoryListAdapter extends BaseAdapter {
     private HistoryActivity activity;
     private LayoutInflater inflater;
-    private Dspam dspam;
+    private List<DspamEntry> entries;
     private boolean[] positionsChecked;
 
-    public HistoryListAdapter(HistoryActivity activity, Dspam dspam) {
+    public HistoryListAdapter(HistoryActivity activity, List<DspamEntry> entries) {
         this.activity = activity;
-        this.dspam = dspam;
-        positionsChecked = new boolean[dspam.dspam.size()];
+        this.entries = entries;
+        positionsChecked = new boolean[entries.size()];
     }
 
     @Override
     public int getCount() {
-        return dspam.dspam.size();
+        return entries.size();
     }
 
     @Override
     public Object getItem(int location) {
-        return dspam.dspam.get(location);
+        return entries.get(location);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class HistoryListAdapter extends BaseAdapter {
         final CheckBox retrainBox = (CheckBox) convertView.findViewById(R.id.checkBoxRetrainSelected);
         final Button retrainButton = (Button) activity.findViewById(R.id.buttonRetrainSelected);
 
-        final DspamEntry entry = dspam.dspam.get(position);
+        final DspamEntry entry = entries.get(position);
 
         DspamEntry.SpamStatus spamStatus = entry.getSpamStatus();
         status.setText(entry.getSpamStatusText());
@@ -126,9 +125,8 @@ public class HistoryListAdapter extends BaseAdapter {
         retrainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RetrainRequest retrainRequest = new RetrainRequest(dspam, positionsChecked);
-                Gson gson = new Gson();
-                String jsonStr = gson.toJson(retrainRequest);
+                RetrainRequest retrainRequest = new RetrainRequest(entries, positionsChecked);
+                String jsonStr = retrainRequest.getJsonRpcRequest();
                 LaunchActivity.sendMessage(jsonStr);
                 Toast.makeText(activity, jsonStr, Toast.LENGTH_LONG).show();
             }

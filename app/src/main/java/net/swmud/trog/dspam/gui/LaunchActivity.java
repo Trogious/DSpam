@@ -17,6 +17,7 @@ import net.swmud.trog.dspam.core.Global;
 import net.swmud.trog.dspam.core.KeyStores;
 import net.swmud.trog.dspam.core.PasswordProvider;
 import net.swmud.trog.dspam.core.Settings;
+import net.swmud.trog.dspam.json.JsonRpc;
 import net.swmud.trog.dspam.net.TcpClient;
 
 public class LaunchActivity extends AppCompatActivity {
@@ -55,8 +56,8 @@ public class LaunchActivity extends AppCompatActivity {
                 } else {
                     sending.append(".");
                     bottomtext.setText(sending.toString());
-                    sendMessage("{\"dspam\":0}");
-                    Log.i("Debug", "onButtonSend2");
+                    sendMessage(JsonRpc.getRequest("get_entries", null));
+                    Log.d("LA", "onButtonSend2");
                 }
             }
         });
@@ -72,11 +73,10 @@ public class LaunchActivity extends AppCompatActivity {
     }
 
     private void startTcpClient() {
-        Log.i("Debug", "startTcpClient");
+        Log.d("LA", "startTcpClient");
         if (tcpClient != null) {
             tcpClient.finish();
         }
-//        settings = Settings.loadSettings(this);
         tcpClient = new TcpClient(settings.getHost(), settings.getPort(),
                 new TcpClient.Listener<String>() {
                     @Override

@@ -30,6 +30,8 @@ import javax.net.ssl.SSLSocketFactory;
 
 
 public class TcpClient implements Runnable {
+    private static final int READ_SIZE = 4096;
+    private static final int CONNECT_TIMEOUT = 10000;
     private String host;
     private int port;
     private Socket socket = new Socket();
@@ -49,13 +51,13 @@ public class TcpClient implements Runnable {
     @Override
     public void run() {
         running = true;
-        Log.i("Debug", "TcpClient.run()");
+        Log.d("Tcp", "TcpClient.run()");
 
         SocketAddress sockAddr = new InetSocketAddress(host, port);
         try {
-            Log.d("D", "try");
-            socket.connect(sockAddr, 10000);
-            Log.d("D", "socket created");
+            Log.d("Tcp", "try");
+            socket.connect(sockAddr, CONNECT_TIMEOUT);
+            Log.d("Tcp", "socket created");
 
             SSLSocket sock = createSslSocket(socket);
             sock.startHandshake();
@@ -87,16 +89,15 @@ public class TcpClient implements Runnable {
         }
         errListener.onMessage("connected");
 
-        ResponseParser rp = new ResponseParser();
+        ResponseParser responseParser = new ResponseParser();
         while (running) {
-            Log.i("Debug", "while");
-            final int SIZE = 4096;
-            char buf[] = new char[SIZE];
-            int bytesRead = 0;
+            Log.d("Tcp", "while");
+            char buf[] = new char[READ_SIZE];
+            int bytesRead;
             try {
-                bytesRead = mBufferIn.read(buf, 0, SIZE);
-                Log.e("bytesRead", "" + bytesRead);
-                rp.parse(buf, bytesRead);
+                bytesRead = mBufferIn.read(buf, 0, READ_SIZE);
+                Log.d("bytesRead", "" + bytesRead);
+                responseParser.parse(buf, bytesRead);
             } catch (SocketTimeoutException e) {
                 errListener.onMessage("socket timed out ok");
                 continue;
@@ -106,26 +107,26 @@ public class TcpClient implements Runnable {
             }
 
             if (bytesRead < 1) {
-                Log.i("Debug", "connection closed by peer");
+                Log.d("Tcp", "connection closed by peer");
                 errListener.onMessage("connection closed by peer");
                 break;
             } else {
-                if (rp.isRequestComplete()) {
-                    String msg = rp.getBody();
-                    Log.e("message", msg);
-                    Log.e("messageLen", "" + msg.length());
+                if (responseParser.isRequestComplete()) {
+                    String msg = responseParser.getBody();
+                    Log.d("message", msg);
+                    Log.d("messageLen", "" + msg.length());
                     msgListener.onMessage(msg);
-                    rp = new ResponseParser();
+                    responseParser = new ResponseParser();
                 }
             }
         }
 
-        Log.i("Debug", "finished");
+        Log.d("Tcp", "finished");
         finish();
     }
 
     private void handleException(Exception e) {
-        Log.e("E", e.getMessage());
+        Log.d("E", e.getMessage());
         errListener.onMessage(e.getMessage());
         finish();
     }
@@ -144,7 +145,7 @@ public class TcpClient implements Runnable {
     public void finish() {
         running = false;
         closeSocket();
-        Log.e("E", "finished");
+        Log.d("E", "finished");
     }
 
     public boolean isRunning() {
@@ -173,24 +174,24 @@ public class TcpClient implements Runnable {
     }
 
     private static void examineX509Cert(X509Certificate cert) {
-        Log.e("x509", "not before: " + DateFormatter.format(cert.getNotBefore()));
-        Log.e("x509", "not after: " + DateFormatter.format(cert.getNotAfter()));
-        Log.e("x509", "issuer DN: " + cert.getIssuerDN().getName());
-        Log.e("x509", "issuer principal x500: " + cert.getIssuerX500Principal().getName());
+        Log.d("x509", "not before: " + DateFormatter.format(cert.getNotBefore()));
+        Log.d("x509", "not after: " + DateFormatter.format(cert.getNotAfter()));
+        Log.d("x509", "issuer DN: " + cert.getIssuerDN().getName());
+        Log.d("x509", "issuer principal x500: " + cert.getIssuerX500Principal().getName());
     }
 
     private static void examineX509Cert(javax.security.cert.X509Certificate cert) {
-        Log.e("x509", "not before: " + DateFormatter.format(cert.getNotBefore()));
-        Log.e("x509", "not after: " + DateFormatter.format(cert.getNotAfter()));
-        Log.e("x509", "issuer DN: " + cert.getIssuerDN().getName());
-        Log.e("x509", "subject DN: " + cert.getSubjectDN().getName());
+        Log.d("x509", "not before: " + DateFormatter.format(cert.getNotBefore()));
+        Log.d("x509", "not after: " + DateFormatter.format(cert.getNotAfter()));
+        Log.d("x509", "issuer DN: " + cert.getIssuerDN().getName());
+        Log.d("x509", "subject DN: " + cert.getSubjectDN().getName());
     }
 
     private static void examineSslSocket(SSLSocket sock) {
-        Log.e("SSL", "want client auth: " + sock.getWantClientAuth());
-        Log.e("SSL", "need client auth: " + sock.getNeedClientAuth());
+        Log.d("SSL", "want client auth: " + sock.getWantClientAuth());
+        Log.d("SSL", "need client auth: " + sock.getNeedClientAuth());
         SSLSession sess = sock.getSession();
-        Log.e("SSL", "protocol used: " + sess.getProtocol());
+        Log.d("SSL", "protocol used: " + sess.getProtocol());
         Log.d("SSL", "peer certificates:");
         try {
             Certificate[] certs = sess.getPeerCertificates();
@@ -200,7 +201,7 @@ public class TcpClient implements Runnable {
                         X509Certificate x5 = (X509Certificate) cert;
                         examineX509Cert(x5);
                     } else {
-                        Log.e("SSL", "NOT x509");
+                        Log.d("SSL", "NOT x509");
                     }
                 }
             }
@@ -217,7 +218,7 @@ public class TcpClient implements Runnable {
                         X509Certificate x5 = (X509Certificate) cert;
                         examineX509Cert(x5);
                     } else {
-                        Log.e("SSL", "NOT x509");
+                        Log.d("SSL", "NOT x509");
                     }
                 }
             }

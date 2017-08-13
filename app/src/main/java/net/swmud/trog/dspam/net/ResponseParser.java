@@ -51,7 +51,7 @@ public class ResponseParser {
                         if (idxEnd >= 0) {
                             String headerValue = sb.substring(idx + header.getValue(), idxEnd);
                             responseLength += headerValue.length() + header.getValue() + HEADER_SEPARATOR_LEN;
-                            Log.e(header.getKey(), headerValue);
+                            Log.d(header.getKey(), headerValue);
                             if (CONTENT_LENGTH_STR.equals(header.getKey())) {
                                 contentLength = Integer.parseInt(headerValue);
                                 responseLength += contentLength;
@@ -66,9 +66,9 @@ public class ResponseParser {
                     headerEndFound = true;
                     bodyStartIdx = headerEndIdx + HEADER_SEPARATOR_LEN + HEADER_SEPARATOR_LEN;
                     responseLength += HEADER_SEPARATOR_LEN;
-                    Log.e("responseLength is: ", "" + responseLength);
+                    Log.d("responseLength is: ", "" + responseLength);
                     headerLength = responseLength - contentLength;
-                    Log.e("headersEnd", "found");
+                    Log.d("headersEnd", "found");
                 }
             }
 

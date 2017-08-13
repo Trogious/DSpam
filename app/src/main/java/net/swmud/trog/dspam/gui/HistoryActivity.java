@@ -8,8 +8,10 @@ import android.widget.ListView;
 import com.google.gson.JsonSyntaxException;
 
 import net.swmud.trog.dspam.R;
-import net.swmud.trog.dspam.core.DspamLogs;
-import net.swmud.trog.dspam.json.Dspam;
+import net.swmud.trog.dspam.core.DspamHistory;
+import net.swmud.trog.dspam.json.DspamEntry;
+
+import java.util.List;
 
 public class HistoryActivity extends Activity {
     int checkboxesVisible = View.GONE;
@@ -19,15 +21,15 @@ public class HistoryActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        DspamLogs l = new DspamLogs();
-        Dspam d = null;
+        DspamHistory history = new DspamHistory();
+        List<DspamEntry> entries = null;
         try {
-            d = l.parse(getIntent().getStringExtra("history"));
+            entries = history.parse(getIntent().getStringExtra("history"));
         } catch (JsonSyntaxException e) {
         }
 
-        if (d != null) {
-            HistoryListAdapter adapter = new HistoryListAdapter(this, d);
+        if (entries != null) {
+            HistoryListAdapter adapter = new HistoryListAdapter(this, entries);
             final ListView listview = (ListView) findViewById(R.id.list);
             listview.setAdapter(adapter);
         }
