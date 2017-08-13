@@ -4,11 +4,10 @@ import json
 import socket
 import ssl
 
-host = 'your.domain.net' 
-port = 3010
+host = 'swmud.net' 
+port = 3000
 backlog = 5 
 size = 4096
-
 
 def decode(str):
 	decoded = str
@@ -24,6 +23,14 @@ def decode(str):
 	return decoded
 
 
+def getJsonResponse(entries, requestId):
+	jsonObj = {}
+	jsonObj['jsonrpc'] = '2.0'
+	jsonObj['id'] = requestId
+	jsonObj['result'] = { 'entries': entries }
+	return jsonObj
+
+
 def process(line):
 	data = line.split('\t')
 	jsonObj = {}
@@ -34,28 +41,27 @@ def process(line):
 	jsonObj['subject'] = data[4]
 	jsonObj['status'] = data[5]
 	jsonObj['msgid'] = data[6]
-	jsonstr = json.dumps(jsonObj) + ','
-	return jsonstr
+	return jsonObj
 
-def readLog():
-	str = ''
-	with open('/dspamlogdir/you@your.domain.net.log','rb') as f:
+def getEntries():
+	entries = []
+	with open('/sith/twelman/twelman@swmud.net.log','rb') as f:
 		line = f.readline()
 		str = ''
 		i = 0
 		while line is not None and len(line) > 0 and i < 500:
 			if len(line) > 1:
-				str = process(decode(line)) + str
+				entry = process(decode(line))
+				entries.append(entry)
 			line = f.readline()
 			i = i + 1
-		str = "{'dspam':[" + str + ']}'
-	return str
+	return entries
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((host,port)) 
 s.listen(backlog) 
-logs = readLog()
+historyEntries = getEntries()[::-1]
 while True:  
 	client, address = s.accept()
 	print('accepted: ' + str(address))
@@ -63,6 +69,7 @@ while True:
 		sslClient = ssl.wrap_socket(client, server_side=True, certfile="server.pem", keyfile="server.key", ssl_version=ssl.PROTOCOL_TLSv1_2,cert_reqs=ssl.CERT_REQUIRED,ca_certs='ca.pem')
 	except ssl.SSLError as e:
 		print('no client cert: ' + e.strerror)
+		client.close()
 		continue
 	client = None
 	data = sslClient.recv(size) 
@@ -71,12 +78,22 @@ while True:
 		data = data.decode('utf8')
 		print(data)
 		req = json.loads(data)
-		if 'dspam' in req.keys():
-			encodedLogs = logs.encode('utf8')
-			logsLen = len(encodedLogs)
-			fullContent = 'Content-Length: ' + str(logsLen) + "\r\n\r\n" + logs
-			sslClient.sendall(fullContent.encode('utf8'))
-			print(fullContent)
+		keys = req.keys()
+		if 'jsonrpc' in keys and req['jsonrpc'] == '2.0' and 'method' in keys and 'id' in keys:
+			method = req['method']
+			if 'retrain' == method:
+				if 'params' in keys and 'entries' in req['params']:
+					entries = req['params']['entries']
+					if len(entries) > 0:
+						for entry in entries:
+							print('entry: %s' % (entry['signature']))
+			elif 'get_entries' == method:
+				response = json.dumps(getJsonResponse(historyEntries, req['id']))
+				encodedResponse = response.encode('utf8')
+				respLen = len(encodedResponse)
+				fullContent = 'Content-Length: ' + str(respLen) + "\r\n\r\n" + response
+				sslClient.sendall(fullContent.encode('utf8'))
+				print(fullContent)
 		print('recv')
 		data = sslClient.recv(size) 
 	sslClient.close()
