@@ -15,6 +15,7 @@ import android.widget.Toast;
 import net.swmud.trog.dspam.R;
 import net.swmud.trog.dspam.core.DateFormatter;
 import net.swmud.trog.dspam.json.DspamEntry;
+import net.swmud.trog.dspam.json.JsonRpc;
 import net.swmud.trog.dspam.json.RetrainRequest;
 
 import java.util.List;
@@ -126,7 +127,8 @@ public class HistoryListAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 RetrainRequest retrainRequest = new RetrainRequest(entries, positionsChecked);
-                String jsonStr = retrainRequest.getJsonRpcRequest();
+                JsonRpc.JsonRequest request = retrainRequest.getJsonRpcRequest();
+                String jsonStr = request.toString();
                 LaunchActivity.sendMessage(jsonStr);
                 Toast.makeText(activity, jsonStr, Toast.LENGTH_LONG).show();
             }

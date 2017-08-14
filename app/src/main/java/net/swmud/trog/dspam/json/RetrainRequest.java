@@ -21,7 +21,7 @@ public class RetrainRequest {
         entries.add(new RetrainEntry(entry.getSignature(), entry.getSpamStatusText()));
     }
 
-    public String getJsonRpcRequest() {
+    public JsonRpc.JsonRequest getJsonRpcRequest() {
         Map<String, Object> args = new HashMap<>();
         args.put("user", "X");
         args.put("entries", entries);

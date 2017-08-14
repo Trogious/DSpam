@@ -10,6 +10,7 @@ import android.widget.Toast;
 import net.swmud.trog.dspam.R;
 import net.swmud.trog.dspam.core.DateFormatter;
 import net.swmud.trog.dspam.json.DspamEntry;
+import net.swmud.trog.dspam.json.JsonRpc;
 import net.swmud.trog.dspam.json.RetrainRequest;
 
 public class DetailsActivity extends Activity {
@@ -45,7 +46,8 @@ public class DetailsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 RetrainRequest retrainRequest = new RetrainRequest(entry);
-                String jsonStr = retrainRequest.getJsonRpcRequest();
+                JsonRpc.JsonRequest request = retrainRequest.getJsonRpcRequest();
+                String jsonStr = request.toString();
                 LaunchActivity.sendMessage(jsonStr);
                 Toast.makeText(self, jsonStr, Toast.LENGTH_SHORT).show();
             }

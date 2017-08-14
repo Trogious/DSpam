@@ -56,7 +56,8 @@ public class LaunchActivity extends AppCompatActivity {
                 } else {
                     sending.append(".");
                     bottomtext.setText(sending.toString());
-                    sendMessage(JsonRpc.getRequest("get_entries", null));
+                    JsonRpc.JsonRequest request = JsonRpc.getRequest("get_entries", null);
+                    sendMessage(request.toString());
                     Log.d("LA", "onButtonSend2");
                 }
             }
