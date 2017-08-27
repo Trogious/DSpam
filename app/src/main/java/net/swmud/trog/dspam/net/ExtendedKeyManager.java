@@ -62,6 +62,7 @@ public class ExtendedKeyManager implements X509KeyManager {
         String hostName = ((InetSocketAddress) socketAddress).getHostName();
         for (X509KeyManager km : keyManagers) {
             for (String keyType : keyTypes) {
+                Log.d("KM", "keyType: " + keyType);
                 String[] aliases = km.getClientAliases(keyType, issuers);
                 if (null != aliases) {
                     for (String alias : aliases) {

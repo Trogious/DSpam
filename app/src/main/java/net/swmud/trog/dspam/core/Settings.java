@@ -24,6 +24,7 @@ public class Settings {
     private String host = "";
     private int port = 0;
     private String password = "";
+    private boolean loginWithCertificate = false;
 
     public Settings() {}
 
@@ -44,11 +45,12 @@ public class Settings {
         return instance;
     }
 
-    public static Settings set(String host, int port, String password) {
+    public static Settings set(String host, int port, String password, boolean loginWithCertificate) {
         Settings settings = getInstance();
         settings.host = host;
         settings.port = port;
         settings.password = password;
+        settings.loginWithCertificate = loginWithCertificate;
         return settings;
     }
 
@@ -62,10 +64,11 @@ public class Settings {
                 String settingsStr = new String(buf, 0, bytesRead, Constants.ENCODING);
                 Log.d("LOAD", settingsStr);
                 String setStr[] = settingsStr.split(SETTING_SEPARATOR);
-                if (setStr != null && setStr.length > 2) {
+                if (setStr != null && setStr.length > 3) {
                     host = setStr[0];
                     port = Integer.parseInt(setStr[1]);
                     password = Crypto.decrypt(getAndroidId(context), setStr[2]);
+                    loginWithCertificate = (1 == Integer.parseInt(setStr[3]));
                 }
             }
         } catch (FileNotFoundException e) {
@@ -104,6 +107,8 @@ public class Settings {
         try {
             outputStream = context.openFileOutput(SETTINGS_FILE_NAME, Context.MODE_PRIVATE);
             sb.append(Crypto.encrypt(getAndroidId(context), password));
+//            sb.append(SETTING_SEPARATOR); //TODO: fix Crypto.encrypt to return password without trailing new line
+            sb.append(loginWithCertificate ? "1" : "0");
             outputStream.write(sb.toString().getBytes(Constants.ENCODING));
             outputStream.flush();
             Log.e("SAVE", sb.toString() + " flushed");
@@ -138,6 +143,8 @@ public class Settings {
     public int getPort() {
         return port;
     }
+
+    public boolean isLoginWithCertificate() { return loginWithCertificate; }
 
     public String getPassword() {
         return password;

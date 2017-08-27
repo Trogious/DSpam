@@ -2,7 +2,6 @@ package net.swmud.trog.dspam.gui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -28,17 +27,13 @@ public class LaunchActivity extends AppCompatActivity {
     private StringBuilder sending = new StringBuilder("sending request");
     private Settings settings = null;
 
-//    public static InputStream getInputStream() {
-//        return SELF.getResources().openRawResource(R.raw.mystore);
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
         settings = Settings.loadSettings(this);
-        Global.keyStores = new KeyStores(Environment.getExternalStorageDirectory().getPath(), new PasswordProvider() {
+        Global.keyStores = new KeyStores(Global.getKeyStoresLocation(), new PasswordProvider() {
             @Override
             public String getPassword() {
                 return settings.getPassword();
@@ -78,7 +73,7 @@ public class LaunchActivity extends AppCompatActivity {
         if (tcpClient != null) {
             tcpClient.finish();
         }
-        tcpClient = new TcpClient(settings.getHost(), settings.getPort(),
+        tcpClient = new TcpClient(settings.getHost(), settings.getPort(), settings.isLoginWithCertificate(),
                 new TcpClient.Listener<String>() {
                     @Override
                     public void onMessage(final String msg) {

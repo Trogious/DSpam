@@ -23,7 +23,7 @@ public class JsonRpcTest {
         Map<String, Object> args = new HashMap<>();
         args.put("user", "X");
         args.put("entries", entries);
-        String actual = JsonRpc.getRequest("retrain", args);
+        String actual = JsonRpc.getRequest("retrain", args).toString();
 //        System.out.println(actual);
         assertEquals("incorrect getRequest output", expected, actual);
     }

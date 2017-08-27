@@ -59,10 +59,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Password:"
-        android:id="@+id/textView11"
-        android:layout_below="@+id/editHost"
+        android:id="@+id/labelPassword"
+        android:layout_below="@+id/radioGroup"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginTop="23dp"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -70,10 +70,10 @@
         android:inputType="textPassword"
         android:minEms="10"
         android:id="@+id/editPassword"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:textAlignment="center"
         android:text="secret"
-        android:layout_below="@+id/textView11"
+        android:layout_below="@+id/labelPassword"
         android:layout_centerHorizontal="true"/>
 
     <Button
@@ -85,5 +85,52 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
         android:background="@android:drawable/btn_default"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/editHost"
+        android:layout_centerHorizontal="true">
+
+        <RadioButton
+            android:id="@+id/radioPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:text="password login"/>
+
+        <RadioButton
+            android:id="@+id/radioCertificate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/editHost"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="certificate login"/>
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/labelKeyStore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editPassword"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="17dp"
+        android:text="Key stores location:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
+    <TextView
+        android:id="@+id/keystoreLocationView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/labelKeyStore"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="19dp"
+        android:text="/path/to/location"/>
 
 </RelativeLayout>

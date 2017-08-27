@@ -19,8 +19,8 @@ public class ExtendedSslFactory extends SSLSocketFactory {
     protected static final SSLSocketFactory SOCKET_FACTORY = (SSLSocketFactory) SSLSocketFactory.getDefault();
     protected SSLContext sslContext = SSLContext.getInstance(Constants.SECURE_PROTOCOL);
 
-    public ExtendedSslFactory() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-        sslContext.init(new KeyManager[]{new ExtendedKeyManager()}, new TrustManager[]{new ExtendedTrustManager()}, null);
+    public ExtendedSslFactory(boolean useClientCertLogin) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+        sslContext.init(useClientCertLogin ? new KeyManager[]{new ExtendedKeyManager()} : null, new TrustManager[]{new ExtendedTrustManager()}, null);
     }
 
     @Override
