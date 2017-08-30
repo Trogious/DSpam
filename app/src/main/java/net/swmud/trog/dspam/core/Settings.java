@@ -19,12 +19,15 @@ public class Settings {
     private static final String SETTINGS_FILE_NAME = "dspamsettings";
     private static final int SETTINGS_READ_SIZE = 1024;
     private static final String SETTING_SEPARATOR = "\n";
+    private static final String PREFERRED_CERT_ALIAS_PLACEHOLDER = " ";
     private static Settings instance;
 
     private String host = "";
     private int port = 0;
     private String password = "";
     private boolean loginWithCertificate = false;
+
+    private  String preferredCertificateAlias = "";
 
     public Settings() {}
 
@@ -45,12 +48,13 @@ public class Settings {
         return instance;
     }
 
-    public static Settings set(String host, int port, String password, boolean loginWithCertificate) {
+    public static Settings set(String host, int port, String password, boolean loginWithCertificate, String preferredCertificateAlias) {
         Settings settings = getInstance();
         settings.host = host;
         settings.port = port;
         settings.password = password;
         settings.loginWithCertificate = loginWithCertificate;
+        settings.preferredCertificateAlias = preferredCertificateAlias;
         return settings;
     }
 
@@ -62,13 +66,18 @@ public class Settings {
             int bytesRead = inputStream.read(buf);
             if (bytesRead > 0) {
                 String settingsStr = new String(buf, 0, bytesRead, Constants.ENCODING);
-                Log.d("LOAD", settingsStr);
                 String setStr[] = settingsStr.split(SETTING_SEPARATOR);
-                if (setStr != null && setStr.length > 3) {
+                Log.d("LOAD", settingsStr + " | " + setStr.length);
+                if (setStr != null && setStr.length > 4) {
                     host = setStr[0];
                     port = Integer.parseInt(setStr[1]);
                     password = Crypto.decrypt(getAndroidId(context), setStr[2]);
                     loginWithCertificate = (1 == Integer.parseInt(setStr[3]));
+                    preferredCertificateAlias = setStr[4];
+                    if (PREFERRED_CERT_ALIAS_PLACEHOLDER.equals(preferredCertificateAlias)) {
+                        preferredCertificateAlias = "";
+                    }
+                    Log.d("LOADED", "");
                 }
             }
         } catch (FileNotFoundException e) {
@@ -109,6 +118,8 @@ public class Settings {
             sb.append(Crypto.encrypt(getAndroidId(context), password));
 //            sb.append(SETTING_SEPARATOR); //TODO: fix Crypto.encrypt to return password without trailing new line
             sb.append(loginWithCertificate ? "1" : "0");
+            sb.append(SETTING_SEPARATOR);
+            sb.append(preferredCertificateAlias.length() < 1 ? PREFERRED_CERT_ALIAS_PLACEHOLDER : preferredCertificateAlias);
             outputStream.write(sb.toString().getBytes(Constants.ENCODING));
             outputStream.flush();
             Log.e("SAVE", sb.toString() + " flushed");
@@ -144,11 +155,13 @@ public class Settings {
         return port;
     }
 
-    public boolean isLoginWithCertificate() { return loginWithCertificate; }
-
     public String getPassword() {
         return password;
     }
+
+    public boolean isLoginWithCertificate() { return loginWithCertificate; }
+
+    public String getPreferredCertificateAlias() { return preferredCertificateAlias; }
 
     public void setHost(String host) {
         this.host = host;

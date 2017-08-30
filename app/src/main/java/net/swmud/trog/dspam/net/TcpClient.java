@@ -35,6 +35,7 @@ public class TcpClient implements Runnable {
     private String host;
     private int port;
     private boolean useClientCertLogin;
+    private String preferredCertAlias;
     private Socket socket = new Socket();
     private PrintWriter mBufferOut;
     private BufferedReader mBufferIn;
@@ -42,10 +43,11 @@ public class TcpClient implements Runnable {
     private Listener msgListener;
     private Listener errListener;
 
-    public TcpClient(String host, int port, boolean useClientCertLogin, Listener<String> msgListener, Listener<String> errListener) {
+    public TcpClient(final String host, final int port, final boolean useClientCertLogin, final String preferredCertAlias, final Listener<String> msgListener, final Listener<String> errListener) {
         this.host = host;
         this.port = port;
         this.useClientCertLogin = useClientCertLogin;
+        this.preferredCertAlias = preferredCertAlias;
         this.msgListener = msgListener;
         this.errListener = errListener;
     }
@@ -168,7 +170,7 @@ public class TcpClient implements Runnable {
     }
 
     private SSLSocket createSslSocket(Socket socket) throws NoSuchAlgorithmException, KeyManagementException, IOException, KeyStoreException, UnrecoverableKeyException {
-        SSLSocketFactory sf = new ExtendedSslFactory(useClientCertLogin);//(SSLSocketFactory) SSLSocketFactory.getDefault();
+        SSLSocketFactory sf = new ExtendedSslFactory(useClientCertLogin, preferredCertAlias);//(SSLSocketFactory) SSLSocketFactory.getDefault();
         SSLSocket sock = (SSLSocket) sf.createSocket(socket, host, port, true);
         sock.setEnabledProtocols(new String[]{Constants.SECURE_PROTOCOL});
 

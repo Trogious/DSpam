@@ -30,7 +30,7 @@ public class ExtendedTrustManager implements X509TrustManager {
         final TrustManagerFactory additionalCerts = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         additionalCerts.init(Global.keyStores.getTrustKeyStore());
 
-        factories.add(additionalCerts);
+        factories.add(additionalCerts); //add custom certs first so that these override the system ones
         factories.add(original);
 
         for (TrustManagerFactory trustManagerFactory : factories) {

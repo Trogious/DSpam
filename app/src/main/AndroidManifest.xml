@@ -30,7 +30,7 @@
         </activity>
         <activity
             android:name=".gui.SettingsActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden">
+            android:configChanges="screenSize|keyboardHidden">
         </activity>
     </application>
 

@@ -7,7 +7,6 @@ import net.swmud.trog.dspam.core.Global;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -24,9 +23,10 @@ import javax.net.ssl.X509KeyManager;
 
 public class ExtendedKeyManager implements X509KeyManager {
     protected List<X509KeyManager> keyManagers = new LinkedList<>();
-    protected KeyStore ks = Global.keyStores.getClientKeyStore();
+    protected String preferredCertAlias;
 
-    protected ExtendedKeyManager() throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+    protected ExtendedKeyManager(final String preferredCertAlias) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+        this.preferredCertAlias = preferredCertAlias;
         final List<KeyManagerFactory> factories = new LinkedList<>();
 
         // The default KeyManager with default keystore
@@ -36,7 +36,7 @@ public class ExtendedKeyManager implements X509KeyManager {
         final KeyManagerFactory additionalCerts = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         additionalCerts.init(Global.keyStores.getClientKeyStore(), Global.keyStores.getPrivateKeyPassword());
 
-        factories.add(additionalCerts);
+        factories.add(additionalCerts); //add custom certs first so that these override the system ones
         factories.add(original);
 
         for (KeyManagerFactory trustManagerFactory : factories) {
@@ -52,6 +52,9 @@ public class ExtendedKeyManager implements X509KeyManager {
     }
 
     protected boolean aliasMatches(String hostName, String alias) {
+        if (null != preferredCertAlias && preferredCertAlias.length() > 0) {
+            return preferredCertAlias.equals(alias);
+        }
         return hostName.equalsIgnoreCase(alias);
     }
 

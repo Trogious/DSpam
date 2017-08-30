@@ -73,7 +73,7 @@ public class LaunchActivity extends AppCompatActivity {
         if (tcpClient != null) {
             tcpClient.finish();
         }
-        tcpClient = new TcpClient(settings.getHost(), settings.getPort(), settings.isLoginWithCertificate(),
+        tcpClient = new TcpClient(settings.getHost(), settings.getPort(), settings.isLoginWithCertificate(), settings.getPreferredCertificateAlias(),
                 new TcpClient.Listener<String>() {
                     @Override
                     public void onMessage(final String msg) {
@@ -111,6 +111,11 @@ public class LaunchActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            case R.id.action_disconnect:
+                if (tcpClient != null) {
+                    tcpClient.finish();
+                }
                 return true;
             case R.id.action_exit:
                 finish();
