@@ -56,7 +56,6 @@ public class HistoryListAdapter extends BaseAdapter {
         }
         convertView = inflater.inflate(R.layout.list_row, null);
 
-        final View cv = convertView;
         TextView status = (TextView) convertView.findViewById(R.id.status);
         TextView from = (TextView) convertView.findViewById(R.id.from);
         TextView signature = (TextView) convertView.findViewById(R.id.signature);
@@ -129,7 +128,7 @@ public class HistoryListAdapter extends BaseAdapter {
                 RetrainRequest retrainRequest = new RetrainRequest(entries, positionsChecked);
                 JsonRpc.JsonRequest request = retrainRequest.getJsonRpcRequest();
                 String jsonStr = request.toString();
-                LaunchActivity.sendMessage(jsonStr);
+                LaunchActivity.sendMessage(request, "retrained", HistoryActivity.class);
                 Toast.makeText(activity, jsonStr, Toast.LENGTH_LONG).show();
             }
         });
@@ -188,5 +187,14 @@ public class HistoryListAdapter extends BaseAdapter {
         }
 
         return checked;
+    }
+
+    void retrainEntries(final List<String> sigs) {
+        for (DspamEntry entry : entries) {
+            if (sigs.contains(entry.getSignature())) {
+                entry.retrain();
+            }
+        }
+        positionsChecked = new boolean[entries.size()];
     }
 }

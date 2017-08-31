@@ -1,20 +1,25 @@
 package net.swmud.trog.dspam.gui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import net.swmud.trog.dspam.R;
 import net.swmud.trog.dspam.core.DateFormatter;
 import net.swmud.trog.dspam.json.DspamEntry;
 import net.swmud.trog.dspam.json.JsonRpc;
 import net.swmud.trog.dspam.json.RetrainRequest;
+import net.swmud.trog.dspam.json.RetrainResponse;
 
 public class DetailsActivity extends Activity {
     private final DetailsActivity self = this;
+    private DspamEntry entry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +36,7 @@ public class DetailsActivity extends Activity {
         final TextView messageId = (TextView) findViewById(R.id.messageId);
         final Button retrain = (Button) findViewById(R.id.retrainButton);
 
-        final DspamEntry entry = (DspamEntry) getIntent().getSerializableExtra("entry");
+        entry = (DspamEntry) getIntent().getSerializableExtra("entry");
 
         from.setText(entry.getFrom());
         date.setText(DateFormatter.format(entry.getDate()));
@@ -48,9 +53,25 @@ public class DetailsActivity extends Activity {
                 RetrainRequest retrainRequest = new RetrainRequest(entry);
                 JsonRpc.JsonRequest request = retrainRequest.getJsonRpcRequest();
                 String jsonStr = request.toString();
-                LaunchActivity.sendMessage(jsonStr);
+                LaunchActivity.sendMessage(request, "retrained1", DetailsActivity.class);
                 Toast.makeText(self, jsonStr, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (entry != null) {
+            final String responseStr = getIntent().getStringExtra("retrained1");
+            RetrainResponse response = new Gson().fromJson(responseStr, RetrainResponse.class);
+            if (response.result.ok.size() > 0) {
+                if (response.result.ok.getFirst().equals(entry.getSignature())) {
+                    final TextView spamStatus = (TextView) findViewById(R.id.spamStatus);
+                    spamStatus.setText("RETRAINED");
+                }
+            }
+        }
     }
 }

@@ -195,6 +195,14 @@ public class DspamEntry implements Serializable {
         date = calendar.getTime();
     }
 
+    public void retrain() {
+        if (spamStatus == SpamStatus.INNOCENT) {
+            spamStatus = SpamStatus.MISSED;
+        } else if (spamStatus == SpamStatus.SPAM) {
+            spamStatus = SpamStatus.FALSE;
+        }
+    }
+
     public Date getDate() {
         return date;
     }
