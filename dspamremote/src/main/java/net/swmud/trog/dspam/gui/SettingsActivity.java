@@ -67,7 +67,7 @@ public class SettingsActivity extends Activity {
         preferredCertSpinner.setSelection(preferredCertAliasIndex);
 
         if (settings.isLoginWithCertificate()) {
-            passwordLabel.setText("Key store & private key password:");
+            passwordLabel.setText(R.string.settings_keystore_privatekey_password);
             keyStoreLocationView.setVisibility(View.VISIBLE);
             keyStoreLocationLabel.setVisibility(View.VISIBLE);
             keyStoreLocationView.setText(Global.getKeyStoresLocation());
@@ -79,7 +79,7 @@ public class SettingsActivity extends Activity {
                 preferredCertSpinner.setVisibility(View.GONE);
             }
         } else {
-            passwordLabel.setText("Password:");
+            passwordLabel.setText(R.string.settings_password);
             keyStoreLocationView.setVisibility(View.GONE);
             keyStoreLocationLabel.setVisibility(View.GONE);
             preferredCertLabel.setVisibility(View.GONE);
@@ -90,7 +90,7 @@ public class SettingsActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked) {
-                    passwordLabel.setText("Password:");
+                    passwordLabel.setText(R.string.settings_password);
                     keyStoreLocationView.setVisibility(View.GONE);
                     keyStoreLocationLabel.setVisibility(View.GONE);
                     preferredCertLabel.setVisibility(View.GONE);
@@ -103,7 +103,7 @@ public class SettingsActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked) {
-                    passwordLabel.setText("Key store & private key password:");
+                    passwordLabel.setText(R.string.settings_keystore_privatekey_password);
                     keyStoreLocationView.setVisibility(View.VISIBLE);
                     keyStoreLocationLabel.setVisibility(View.VISIBLE);
                     keyStoreLocationView.setText(Global.getKeyStoresLocation());

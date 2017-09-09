@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:text="Host:"
+        android:text="@string/settings_label_host"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
     <TextView
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:text="Port:"
+        android:text="@string/settings_label_port"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
     <EditText
@@ -36,10 +36,11 @@
         android:layout_below="@+id/textView9"
         android:layout_marginTop="15dp"
         android:layout_toLeftOf="@+id/editPort"
-        android:hint="hostname or IP"
+        android:hint="@string/settings_label_hostname_ip"
         android:inputType="text"
         android:text="192.168.1.1"
-        android:maxLines="1"/>
+        android:maxLines="1"
+        tools:ignore="HardcodedText"/>
 
     <EditText
         android:id="@+id/editPort"
@@ -49,10 +50,11 @@
         android:layout_below="@+id/textView10"
         android:layout_marginTop="15dp"
         android:ems="5"
-        android:hint="port"
+        android:hint="@string/settings_hint_port"
         android:inputType="number"
         android:text="3000"
-        android:textAlignment="textEnd"/>
+        android:textAlignment="textEnd"
+        tools:ignore="HardcodedText"/>
 
     <TextView
         android:id="@+id/labelPassword"
@@ -61,7 +63,7 @@
         android:layout_below="@+id/radioGroup"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:text="Password:"
+        android:text="@string/settings_label_password"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
     <EditText
@@ -74,7 +76,8 @@
         android:inputType="textPassword"
         android:minEms="10"
         android:text="secret"
-        android:textAlignment="center"/>
+        android:textAlignment="center"
+        tools:ignore="HardcodedText"/>
 
     <Button
         android:id="@+id/buttonSveSettings"
@@ -100,18 +103,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:text="password login"/>
+            android:text="@string/settings_radio_password"/>
 
         <RadioButton
             android:id="@+id/radioCertificate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/editHost"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:checked="true"
-            android:text="certificate login"/>
+            android:text="@string/settings_radio_certificate"/>
     </RadioGroup>
 
     <TextView
@@ -121,7 +122,7 @@
         android:layout_below="@+id/editPassword"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:text="Key stores location:"
+        android:text="@string/settings_label_keystores_location"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
     <TextView
@@ -131,7 +132,7 @@
         android:layout_below="@+id/labelKeyStore"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:text="/path/to/location"/>
+        android:text="@string/settings_label_path_to_location"/>
 
     <TextView
         android:id="@+id/labelPreferredCert"
@@ -140,7 +141,7 @@
         android:layout_below="@+id/keystoreLocationView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:text="Preferred certificate alias:"
+        android:text="@string/settings_label_preferred_certificate_alias"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
     <Spinner

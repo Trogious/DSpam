@@ -34,7 +34,7 @@ public class LaunchActivity extends AppCompatActivity {
     static TcpClient tcpClient;
     private final LaunchActivity self = this;
     private TextView bottomtext;
-    private StringBuilder sending = new StringBuilder("sending request");
+    private StringBuilder sending;
     private Settings settings = null;
     private static final ResponseRouter responseRouter = new ResponseRouter();
 
@@ -47,6 +47,8 @@ public class LaunchActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
+
+        sending = new StringBuilder(getString(R.string.launch_sending_req));
         settings = Settings.loadSettings(this);
         Global.keyStores = new KeyStores(Global.getKeyStoresLocation(), new PasswordProvider() {
             @Override
@@ -126,7 +128,7 @@ public class LaunchActivity extends AppCompatActivity {
         if (!tcpClient.isRunning()) {
             backgroundExecutor.execute(tcpClient);
         }
-        sending = new StringBuilder("sending request");
+        sending = new StringBuilder(getString(R.string.launch_sending_req));
     }
 
     @Override
