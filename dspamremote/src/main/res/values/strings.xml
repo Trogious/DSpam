@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">DSpam Remote</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_exit">Exit App</string>
+
+    <string name="dspamenvelope">dspam envelope icon</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="launch_top_text">Tap the envelope to continue.</string>
+    <string name="launch_bottom_text">Tap the envelope to begin.</string>
+    <string name="details_retrain">Retrain</string>
+    <string name="parsing_argument_failed">Parsing activity argument \'%1$s\' failed: %2$s.</string>
+    <string name="parsing_jsonrpc_response_failed">Malformed JSON-RPC 2.0 request: %1$s.</string>
+</resources>

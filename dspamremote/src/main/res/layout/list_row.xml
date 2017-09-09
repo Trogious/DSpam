@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/list_row_selector"
+                android:clickable="true"
+                android:padding="8dp">
+
+    <!-- status Image -->
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="5dp"
+        android:background="@color/dspam_status_virus"
+        android:gravity="center_vertical|center"
+        android:text="I"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/status"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/status"
+        android:text="The Darth &apos;Trog&apos; Trogious &lt;trogeliusztrog@swmud.net>"
+        android:textSize="@dimen/from"
+        android:textStyle="bold"
+        android:layout_toLeftOf="@+id/checkBoxRetrainSelected"/>
+
+
+    <TextView
+        android:id="@+id/signature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/from"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@+id/status"
+        android:focusableInTouchMode="false"
+        android:text="56da47e4232201413514249"
+        android:textSize="@dimen/signature"/>
+
+    <TextView
+        android:id="@+id/subject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/date"
+        android:layout_marginTop="10dp"
+        android:text="The Dark Plan"
+        android:textColor="@color/subject"
+        android:textSize="@dimen/subject"/>
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="false"
+        android:layout_below="@id/from"
+        android:layout_marginTop="4dp"
+        android:gravity="right"
+        android:text="2016-05-01 13:00:01"
+        android:textSize="@dimen/signature"
+        android:layout_alignParentEnd="false"
+        android:layout_toRightOf="@+id/signature"
+        android:layout_toLeftOf="@+id/checkBoxRetrainSelected"/>
+
+    <CheckBox
+        android:id="@+id/checkBoxRetrainSelected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone"
+        android:layout_centerVertical="true"/>
+
+
+</RelativeLayout>
