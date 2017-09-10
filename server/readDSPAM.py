@@ -3,11 +3,46 @@
 import json
 import socket
 import ssl
+import random, string, requests
 
 host = 'swmud.net' 
 port = 3000
 backlog = 5 
 size = 4096
+
+SIGNATURE_LEN = 23
+MSGID_PRE_AT_LEN = 50
+
+def get_random_string(size):
+    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(size))
+
+def get_from(user):
+    return '"' + user['name']['first'] + ' ' + user['name']['last'] + '"' + ' <' + user['email'] + '>'
+
+def get_msg_id(user):
+    domain = 'example2.com'
+    atIdx = user['email'].find('@')
+    if atIdx >= 0:
+        domain = user['email'][atIdx+1:]
+    return get_random_string(MSGID_PRE_AT_LEN) + '@' + domain
+
+def get_status(user):
+    return 'Delivered'
+
+def get_subject(user):
+    return 'This is a test email ' + get_random_string(4)
+
+def get_spam_status(user):
+    return random.choice('ISMF')
+
+def get_random_emails():
+    emails = []
+    resp = requests.get('https://randomuser.me/api/?results=20')
+    if 200 == resp.status_code:
+        data = resp.json()
+        for user in data['results']:
+            emails.append({'from': get_from(user), 'signature': get_random_string(SIGNATURE_LEN), 'timestamp': '1457000174', 'msgid': get_msg_id(user), 'status': get_status(user), 'subject': get_subject(user), 'spamstatus': get_spam_status(user)})
+    return emails
 
 def decode(str):
 	decoded = str
@@ -23,13 +58,21 @@ def decode(str):
 	return decoded
 
 
-def getJsonResponse(entries, requestId):
+def getJsonResponse(result, requestId):
 	jsonObj = {}
 	jsonObj['jsonrpc'] = '2.0'
 	jsonObj['id'] = requestId
-	jsonObj['result'] = { 'entries': entries }
+	jsonObj['result'] = result
 	return jsonObj
 
+def getJsonResponseEntries(entries, requestId):
+	return getJsonResponse({ 'entries': entries }, requestId)
+
+def getJsonResponseRetrain(okEntries, errEntries, requestId):
+	jsonObj = {}
+	jsonObj['ok'] = [entry['signature'] for entry in okEntries]
+	jsonObj['fail'] = []
+	return getJsonResponse(jsonObj, requestId)
 
 def process(line):
 	data = line.split('\t')
@@ -62,11 +105,13 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((host,port)) 
 s.listen(backlog) 
 historyEntries = getEntries()[::-1]
+historyEntries = get_random_emails()
 while True:  
 	client, address = s.accept()
 	print('accepted: ' + str(address))
 	try:
 		sslClient = ssl.wrap_socket(client, server_side=True, certfile="server.pem", keyfile="server.key", ssl_version=ssl.PROTOCOL_TLSv1_2,cert_reqs=ssl.CERT_REQUIRED,ca_certs='ca.pem')
+#		sslClient = ssl.wrap_socket(client, server_side=True, certfile="server.pem", keyfile="server.key", ssl_version=ssl.PROTOCOL_TLSv1_2,cert_reqs=ssl.CERT_OPTIONAL,ca_certs='ca.pem')
 	except ssl.SSLError as e:
 		print('no client cert: ' + e.strerror)
 		client.close()
@@ -85,10 +130,14 @@ while True:
 				if 'params' in keys and 'entries' in req['params']:
 					entries = req['params']['entries']
 					if len(entries) > 0:
-						for entry in entries:
-							print('entry: %s' % (entry['signature']))
+						response = json.dumps(getJsonResponseRetrain(entries,[],req['id']))
+						encodedResponse = response.encode('utf8')
+						respLen = len(encodedResponse)
+						fullContent = 'Content-Length: ' + str(respLen) + "\r\n\r\n" + response
+						sslClient.sendall(fullContent.encode('utf8'))
+						print(fullContent)
 			elif 'get_entries' == method:
-				response = json.dumps(getJsonResponse(historyEntries, req['id']))
+				response = json.dumps(getJsonResponseEntries(historyEntries, req['id']))
 				encodedResponse = response.encode('utf8')
 				respLen = len(encodedResponse)
 				fullContent = 'Content-Length: ' + str(respLen) + "\r\n\r\n" + response
