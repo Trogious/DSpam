@@ -3,6 +3,7 @@ package net.swmud.trog.dspam.gui;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
@@ -30,6 +31,7 @@ import net.swmud.trog.dspam.json.JsonRpc;
 import net.swmud.trog.dspam.net.TcpClient;
 
 public class LaunchActivity extends AppCompatActivity {
+    private static final int PERMISSION_REQ_ID = 1;
     private static final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
     static TcpClient tcpClient;
     private final LaunchActivity self = this;
@@ -45,7 +47,7 @@ public class LaunchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_launch);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQ_ID);
         }
 
         sending = new StringBuilder(getString(R.string.launch_sending_req));
@@ -178,7 +180,11 @@ public class LaunchActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        //TODO: implement onRequestPermissionsResult
+        switch (requestCode) {
+            case PERMISSION_REQ_ID:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    settings = Settings.loadSettings(this);
+                }
+        }
     }
 }

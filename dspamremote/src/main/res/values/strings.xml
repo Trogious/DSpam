@@ -4,13 +4,14 @@
     <string name="action_disconnect">Disconnect</string>
     <string name="action_exit">Exit App</string>
 
-    <string name="dspamenvelope">dspam envelope icon</string>
+    <string name="parsing_argument_failed">Parsing activity argument \'%1$s\' failed: %2$s.</string>
+    <string name="parsing_jsonrpc_response_failed">Malformed JSON-RPC 2.0 request: %1$s.</string>
+
+    <string name="launch_dspamenvelope">dspam envelope icon</string>
     <string name="launch_top_text">Tap the envelope to continue.</string>
     <string name="launch_bottom_text">Tap the envelope to begin.</string>
     <string name="launch_sending_req">sending request</string>
     <string name="details_retrain">Retrain</string>
-    <string name="parsing_argument_failed">Parsing activity argument \'%1$s\' failed: %2$s.</string>
-    <string name="parsing_jsonrpc_response_failed">Malformed JSON-RPC 2.0 request: %1$s.</string>
     <string name="settings_keystore_privatekey_password"><![CDATA[Key store & private key password:]]></string>
     <string name="settings_password">Password:</string>
     <string name="settings_label_password">Password:</string>
@@ -23,4 +24,5 @@
     <string name="settings_label_keystores_location">Key stores location:</string>
     <string name="settings_label_preferred_certificate_alias">Preferred certificate alias:</string>
     <string name="settings_label_path_to_location">/path/to/location</string>
+    <string name="settings_button_save">Save Settings</string>
 </resources>
