@@ -9,12 +9,12 @@ android {
             storeFile file('/root/AndroidStudioProjects/DSpam/keystores/apksign.jks')
         }
     }
-    compileSdkVersion 23
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "net.swmud.trog.dspam"
         minSdkVersion 18
-        targetSdkVersion 23
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
     }
@@ -26,6 +26,7 @@ android {
             copywwwDepend = 'packageFreeRelease'
         }
     }
+    flavorDimensions "version"
     productFlavors {
         free {
             signingConfig signingConfigs.apksignJKS
@@ -39,15 +40,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.google.code.gson:gson:2.6.2'
-    compile 'com.android.support:support-v4:23.3.0'
-    testCompile 'junit:junit:4.12'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    testImplementation 'junit:junit:4.13'
     //    testCompile 'org.powermock:powermock:1.6.5'
-    testCompile 'org.powermock:powermock-module-junit4:1.6.5'
-    testCompile 'org.powermock:powermock-api-mockito:1.6.5'
-    testCompile 'com.google.guava:guava:23.0-android'
+    testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
+    testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
+    testImplementation 'com.google.guava:guava:28.2-android'
 }
 
 task copywww(dependsOn: [copywwwDepend], type: Copy) {
@@ -56,7 +57,9 @@ task copywww(dependsOn: [copywwwDepend], type: Copy) {
     destinationDir file('/home/dupa/www')
 }
 
+/*
 afterEvaluate {
     assembleFreeDebug.dependsOn copywww
     assembleFreeRelease.dependsOn copywww
 }
+*/
